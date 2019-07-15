@@ -5,12 +5,14 @@
 #include "blog/my_module.h"
 #include "sylar/email/smtp.h"
 #include "sylar/env.h"
+#include "sylar/sylar.h"
 #include <regex>
 
 namespace blog {
 namespace servlet {
 
 static sylar::Logger::ptr g_logger = SYLAR_LOG_ROOT();
+static sylar::Logger::ptr g_logger_access = SYLAR_LOG_NAME("access");
 
 UserCreateServlet::UserCreateServlet()
     :sylar::http::Servlet("UserCreate") {
@@ -77,6 +79,10 @@ int32_t UserCreateServlet::handle(sylar::http::HttpRequest::ptr request
         //TODO 验证账号是否合法，验证邮箱是否合法
 
         std::string v = sylar::random_string(16);
+        SYLAR_LOG_INFO(g_logger) << "[" << v << "]";
+        for(auto& i : v) {
+            SYLAR_ASSERT(i);
+        }
         data::UserInfo::ptr info(new data::UserInfo);
         info->setAccount(account);
         info->setEmail(email);
@@ -93,9 +99,9 @@ int32_t UserCreateServlet::handle(sylar::http::HttpRequest::ptr request
         auto mail = sylar::EMail::Create(
                 sylar::EnvMgr::GetInstance()->getEnv("blog_email")
                 ,sylar::EnvMgr::GetInstance()->getEnv("blog_email_passwd")
-                ,"SBlog Create Account Auth"
-                ,"Auth Code[" + v + "]"
-                ,{email}, {}, {"ydj564628276@163.com"});
+                ,"SBlog Create Account Auth - 验证码"
+                ,"验证码[" + v + "]"
+                ,{email}, {"ydj564628276@163.com"}, {"ydj564628276@163.com"});
 
         auto client = sylar::SmtpClient::Create("smtp.163.com", 25);
         if(!client) {
@@ -121,7 +127,9 @@ int32_t UserCreateServlet::handle(sylar::http::HttpRequest::ptr request
     v["code"] = std::to_string(code);
     v["msg"] = msg;
     response->setBody(sylar::JsonUtil::ToString(v));
-    
+    SYLAR_LOG_INFO(g_logger_access) << code << "\t"
+        << msg << "\t" << request->getPath()
+        << "\t" << (!request->getQuery().empty() ? request->getQuery() : "-");
     SYLAR_LOG_INFO(g_logger) << "UserCreateServlet: " << *request
         << " - " << *response;
     return 0;
