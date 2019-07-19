@@ -94,7 +94,7 @@ int32_t CategoryDeleteServlet::handle(sylar::http::HttpRequest::ptr request
             }
             break;
         }
-        result->setResult(0, "ok");
+        result->setResult(200, "ok");
         if(!del_cats.empty()) {
             auto& jids = result->jsondata["ids"];
             for(auto& i : del_cats) {

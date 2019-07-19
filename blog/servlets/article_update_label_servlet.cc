@@ -127,7 +127,7 @@ int32_t ArticleUpdateLabelServlet::handle(sylar::http::HttpRequest::ptr request
         for(auto& i : new_infos) {
             ArticleLabelRelMgr::GetInstance()->add(i);
         }
-        result->setResult(0, "ok");
+        result->setResult(200, "ok");
         if(!update_add_infos.empty()) {
             auto& v = result->jsondata["add_label_ids"];
             for(auto& i : update_add_infos) {

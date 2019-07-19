@@ -34,7 +34,7 @@ int32_t ArticleDetailServlet::handle(sylar::http::HttpRequest::ptr request
             result->setResult(404, "invalid id");
             break;
         }
-        result->setResult(0, "ok");
+        result->setResult(200, "ok");
         result->set("id", info->getId());
         result->set("title", info->getTitle());
         result->set("content", info->getContent());

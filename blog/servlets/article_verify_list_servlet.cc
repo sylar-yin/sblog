@@ -29,7 +29,7 @@ int32_t ArticleVerifyListServlet::handle(sylar::http::HttpRequest::ptr request
         std::vector<data::ArticleInfo::ptr> infos;
         auto total = ArticleMgr::GetInstance()->listVerifyPages(infos
                                                     ,page_from, page_size);
-        result->setResult(0, "ok");
+        result->setResult(200, "ok");
         result->jsondata["total"] = total;
         result->jsondata["page_from"] = page_from;
         result->jsondata["page_size"] = page_size;

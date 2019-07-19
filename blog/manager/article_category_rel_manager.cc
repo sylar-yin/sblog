@@ -53,7 +53,7 @@ bool ArticleCategoryRelManager::listByArticleId(std::vector<data::ArticleCategor
     sylar::RWMutex::ReadLock lock(m_mutex);
     auto it = m_articles.find(id);
     if(it == m_articles.end()) {
-        return nullptr;
+        return false;
     }
     for(auto& i : it->second) {
         if(!valid || !i.second->getIsDeleted()) {

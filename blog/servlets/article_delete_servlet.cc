@@ -69,7 +69,7 @@ int32_t ArticleDeleteServlet::handle(sylar::http::HttpRequest::ptr request
             }
             break;
         }
-        result->setResult(0, "ok");
+        result->setResult(200, "ok");
         if(!infos.empty()) {
             auto& jids = result->jsondata["ids"];
             for(auto& i : infos) {

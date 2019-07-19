@@ -52,7 +52,7 @@ int32_t LabelCreateServlet::handle(sylar::http::HttpRequest::ptr request
             LabelMgr::GetInstance()->add(info);
         }
 
-        result->setResult(0, "ok");
+        result->setResult(200, "ok");
         result->set("id", info->getId());
         result->set("name", info->getName());
     } while(false);

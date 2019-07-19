@@ -63,7 +63,7 @@ bool ArticleLabelRelManager::listByArticleId(std::vector<data::ArticleLabelRelIn
     sylar::RWMutex::ReadLock lock(m_mutex);
     auto it = m_articles.find(article_id);
     if(it == m_articles.end()) {
-        return nullptr;
+        return false;
     }
     for(auto& i : it->second) {
         if(!valid || !i.second->getIsDeleted()) {

@@ -50,6 +50,8 @@ int32_t BlogServlet::handle(sylar::http::HttpRequest::ptr request
                            ,sylar::http::HttpResponse::ptr response
                            ,sylar::http::HttpSession::ptr session) {
     Result::ptr result = std::make_shared<Result>();
+    response->setHeader("Access-Control-Allow-Origin", "*");
+    response->setHeader("Access-Control-Allow-Credentials", "true");
     if(handlePre(request, response, session, result)) {
         handle(request, response, session, result);
     } else {

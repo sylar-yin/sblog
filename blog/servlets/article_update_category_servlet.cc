@@ -127,7 +127,7 @@ int32_t ArticleUpdateCategoryServlet::handle(sylar::http::HttpRequest::ptr reque
         for(auto& i : new_infos) {
             ArticleCategoryRelMgr::GetInstance()->add(i);
         }
-        result->setResult(0, "ok");
+        result->setResult(200, "ok");
         if(!update_add_infos.empty()) {
             auto& v = result->jsondata["add_category_ids"];
             for(auto& i : update_add_infos) {

@@ -27,7 +27,7 @@ int32_t CategoryQueryServlet::handle(sylar::http::HttpRequest::ptr request
         DEFINE_AND_CHECK_TYPE(result, int64_t, user_id, "user_id");
         std::vector<data::CategoryInfo::ptr> infos;
         CategoryMgr::GetInstance()->listByUserId(infos, user_id, true);
-        result->setResult(0, "ok");
+        result->setResult(200, "ok");
         for(auto& i : infos) {
             Json::Value v;
             v["id"] = i->getId();

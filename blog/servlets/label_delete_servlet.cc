@@ -70,7 +70,7 @@ int32_t LabelDeleteServlet::handle(sylar::http::HttpRequest::ptr request
             }
             break;
         }
-        result->setResult(0, "ok");
+        result->setResult(200, "ok");
         if(!dinfos.empty()) {
             auto& jids = result->jsondata["ids"];
             for(auto& i : dinfos) {

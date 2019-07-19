@@ -72,7 +72,7 @@ int32_t ArticleVerifyServlet::handle(sylar::http::HttpRequest::ptr request
             info->setState(1);
             break;
         }
-        result->setResult(0, "ok");
+        result->setResult(200, "ok");
     } while(false);
     
     response->setBody(result->toJsonString());

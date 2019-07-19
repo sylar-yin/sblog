@@ -56,7 +56,7 @@ int32_t ArticlePublishServlet::handle(sylar::http::HttpRequest::ptr request
             break;
         }
         ArticleMgr::GetInstance()->add(info);
-        result->setResult(0, "ok");
+        result->setResult(200, "ok");
     } while(false);
     
     response->setBody(result->toJsonString());

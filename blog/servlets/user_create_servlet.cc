@@ -81,7 +81,7 @@ int32_t UserCreateServlet::handle(sylar::http::HttpRequest::ptr request
                 ,"验证码[" + v + "]"
                 ,{email}, {}, {send_email});
 
-        auto client = sylar::SmtpClient::Create("smtp.163.com", 25);
+        auto client = sylar::SmtpClient::Create("smtp.163.com", 465, true);
         if(!client) {
             SYLAR_LOG_ERROR(g_logger) << "connect email server fail";
             result->setResult(501, "connect email server fail");

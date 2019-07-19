@@ -64,7 +64,7 @@ int32_t CategoryCreateServlet::handle(sylar::http::HttpRequest::ptr request
             CategoryMgr::GetInstance()->add(info);
         }
 
-        result->setResult(0, "ok");
+        result->setResult(200, "ok");
         result->set("id", info->getId());
         result->set("name", info->getName());
         if(parent_id) {
