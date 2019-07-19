@@ -1,13 +1,14 @@
 #include "user_manager.h"
-#include "blog/my_module.h"
 #include "sylar/log.h"
+#include "sylar/util.h"
+#include "blog/util.h"
 
 namespace blog {
 
 static sylar::Logger::ptr g_logger = SYLAR_LOG_ROOT();
 
 bool UserManager::loadAll() {
-    auto db = GetSQLite3();
+    auto db = GetDB();
     if(!db) {
         SYLAR_LOG_ERROR(g_logger) << "Get SQLite3 connection fail";
         return false;
@@ -68,5 +69,15 @@ blog::data::UserInfo::ptr UserManager::getByName(const std::string& v) {
 }
 
 #undef XX
+
+std::string UserManager::GetToken(data::UserInfo::ptr info, int64_t ts) {
+    std::stringstream ss;
+    ss << info->getId()
+       << "|" << info->getAccount()
+       << "|" << info->getEmail()
+       << "|" << info->getPasswd()
+       << "|" << ts;
+    return sylar::md5(ss.str());
+}
 
 }

@@ -1,0 +1,14 @@
+<table name="article_label_rel" namespace="blog.data">
+    <columns>
+        <column name="id" type="int64" auto_increment="true"/>
+        <column name="article_id" type="int64"/>
+        <column name="label_id" type="int64"/>
+        <column name="is_deleted" type="int32"/>
+        <column name="create_time" type="datetime" default="current_timestamp"/>
+        <column name="update_time" type="datetime" update="current_timestamp"/>
+    </columns>
+    <indexs>
+        <index name="pk" cols="id" type="pk"/>
+        <index name="article_id" cols="article_id" type="index"/>
+    </indexs>
+</table>

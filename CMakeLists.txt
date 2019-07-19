@@ -36,8 +36,25 @@ endif()
 
 set(LIB_SRC
         blog/my_module.cc
+        blog/manager/article_manager.cc
+        blog/manager/article_category_rel_manager.cc
+        blog/manager/article_label_rel_manager.cc
+        blog/manager/category_manager.cc
+        blog/manager/comment_manager.cc
+        blog/manager/label_manager.cc
         blog/manager/user_manager.cc
+        blog/servlets/user_active_servlet.cc
         blog/servlets/user_create_servlet.cc
+        blog/servlets/user_change_passwd_servlet.cc
+        blog/servlets/user_exists_servlet.cc
+        blog/servlets/user_forget_passwd_servlet.cc
+        blog/servlets/user_info_servlet.cc
+        blog/servlets/user_login_servlet.cc
+        blog/servlets/user_logout_servlet.cc
+        blog/servlets/user_query_servlet.cc
+        blog/servlets/user_update_servlet.cc
+        blog/struct.cc
+        blog/util.cc
     )
 
 #PROTOBUF_GENERATE_CPP(PB_SRCS PB_HDRS sylar/test.proto)

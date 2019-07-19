@@ -6,78 +6,55 @@
 #include "sylar/email/smtp.h"
 #include "sylar/env.h"
 #include "sylar/sylar.h"
+#include "blog/util.h"
+#include "blog/struct.h"
 #include <regex>
 
 namespace blog {
 namespace servlet {
 
 static sylar::Logger::ptr g_logger = SYLAR_LOG_ROOT();
-static sylar::Logger::ptr g_logger_access = SYLAR_LOG_NAME("access");
 
 UserCreateServlet::UserCreateServlet()
-    :sylar::http::Servlet("UserCreate") {
-}
-
-bool is_email(const std::string& str) {
-    static const std::regex s_email_regex("[0-9A-Za-z\\-_\\.]+@[0-9a-z]+\\.[a-z]{2,8}\\.[a-z]{2,8}?");
-    return std::regex_match(str, s_email_regex);
-}
-
-bool is_valid_account(const std::string& str) {
-    static const std::regex s_account_regex("[A-Za-z][0-9A-Za-z\\-_\\.]{4, 15}");
-    return std::regex_match(str, s_account_regex);
+    :BlogServlet("UserCreate") {
 }
 
 int32_t UserCreateServlet::handle(sylar::http::HttpRequest::ptr request
                                   ,sylar::http::HttpResponse::ptr response
-                                  ,sylar::http::HttpSession::ptr session) {
+                                  ,sylar::http::HttpSession::ptr session
+                                  ,Result::ptr result) {
 //account | string | 是 | 账号
 //email | string | 是 | 邮箱
 //passwd | string | 是 | 密码（MD5）
-    int code = 200;
-    std::string msg = "ok";
     do {
-        auto account = request->getParam("account");
-        if(account.empty()) {
-            code = 400;
-            msg = "param account is null";
-            break;
-        }
-        auto email = request->getParam("email");
-        if(email.empty()) {
-            code = 400;
-            msg = "param email is null";
-            break;
-        }
-        auto passwd = request->getParam("passwd");
-        if(passwd.empty()) {
-            code = 400;
-            msg = "param passwd is null";
-            break;
-        }
+        DEFINE_AND_CHECK_STRING(result, account, "account");
+        DEFINE_AND_CHECK_STRING(result, email, "email");
+        DEFINE_AND_CHECK_STRING(result, passwd, "passwd");
 
         if(UserMgr::GetInstance()->getByAccount(account)) {
-            code = 401;
-            msg = "account exists";
+            result->setResult(401, "account exists");
             break;
         }
         if(UserMgr::GetInstance()->getByEmail(email)) {
-            code = 401;
-            msg = "email exists";
+            result->setResult(401, "email exists");
             break;
         }
 
-        auto db = GetSQLite3();
+        if(!is_email(email)) {
+            result->setResult(402, "invalid email format");
+            break;
+        }
+        if(!is_valid_account(account)) {
+            result->setResult(402, "invalid account");
+            break;
+        }
+
+        auto db = getDB();
         if(!db) {
-            code = 500;
-            msg = "get db connection fail";
+            result->setResult(500, "get db connection fail");
             break;
         }
-        sylar::SQLite3Transaction trans(db);
-        trans.begin();
-
-        //TODO 验证账号是否合法，验证邮箱是否合法
-
+        sylar::ITransaction::ptr trans = db->openTransaction();
         std::string v = sylar::random_string(16);
         SYLAR_LOG_INFO(g_logger) << "[" << v << "]";
         for(auto& i : v) {
@@ -92,46 +69,37 @@ int32_t UserCreateServlet::handle(sylar::http::HttpRequest::ptr request
         info->setCode(v);
 
         if(data::UserInfoDao::Insert(info, db)) {
-            code = 500;
-            msg = "insert user fail";
+            result->setResult(500, "insert user fail");
+            //TODO log
             break;
         }
+        std::string send_email = sylar::EnvMgr::GetInstance()->getEnv("blog_email");
+        std::string send_email_passwd = sylar::EnvMgr::GetInstance()->getEnv("blog_email_passwd");
         auto mail = sylar::EMail::Create(
-                sylar::EnvMgr::GetInstance()->getEnv("blog_email")
-                ,sylar::EnvMgr::GetInstance()->getEnv("blog_email_passwd")
+                send_email, send_email_passwd
                 ,"SBlog Create Account Auth - 验证码"
                 ,"验证码[" + v + "]"
-                ,{email}, {"ydj564628276@163.com"}, {"ydj564628276@163.com"});
+                ,{email}, {}, {send_email});
 
         auto client = sylar::SmtpClient::Create("smtp.163.com", 25);
         if(!client) {
             SYLAR_LOG_ERROR(g_logger) << "connect email server fail";
-            code = 501;
-            msg = "connect email server fail";
+            result->setResult(501, "connect email server fail");
             break;
         }
 
-        auto r = client->send(mail);
+        auto r = client->send(mail, 5000);
         if(r->result != 0) {
-            code = 501;
-            msg = std::to_string(r->result) + " " + r->msg;
+            result->setResult(501, std::to_string(r->result) + " " + r->msg);
             break;
         }
 
-        trans.commit();
+        trans->commit();
         UserMgr::GetInstance()->add(info);
         SYLAR_LOG_INFO(g_logger) << info->toJsonString();
     } while(false);
     
-    Json::Value v;
-    v["code"] = std::to_string(code);
-    v["msg"] = msg;
-    response->setBody(sylar::JsonUtil::ToString(v));
-    SYLAR_LOG_INFO(g_logger_access) << code << "\t"
-        << msg << "\t" << request->getPath()
-        << "\t" << (!request->getQuery().empty() ? request->getQuery() : "-");
-    SYLAR_LOG_INFO(g_logger) << "UserCreateServlet: " << *request
-        << " - " << *response;
+    response->setBody(result->toJsonString());
     return 0;
 }
 

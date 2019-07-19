@@ -10,3 +10,4 @@ fi
 
 cp sylar/bin/sylar bin/sblog
 cp lib/libsblog.so bin/module/
+cp sylar/bin/orm bin/orm

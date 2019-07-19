@@ -1,0 +1,18 @@
+<table name="article" namespace="blog.data">
+    <columns>
+        <column name="id" type="int64" auto_increment="true"/>
+        <column name="user_id" type="int64"/>
+        <column name="title" type="string" length="100"/>
+        <column name="content" type="string" length="4096"/>
+        <column name="type" type="int32"/>
+        <column name="state" type="int32"/>
+        <column name="is_deleted" type="int32"/>
+        <column name="publish_time" type="datetime"/>
+        <column name="create_time" type="datetime" default="current_timestamp"/>
+        <column name="update_time" type="datetime" update="current_timestamp"/>
+    </columns>
+    <indexs>
+        <index name="pk" cols="id" type="pk"/>
+        <index name="user_id" cols="user_id" type="index"/>
+    </indexs>
+</table>

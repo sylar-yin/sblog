@@ -1,15 +1,17 @@
 <table name="user" namespace="blog.data">
     <columns>
         <column name="id" type="int64" auto_increment="true"/>
-        <column name="account" type="string"/>
-        <column name="email" type="string"/>
-        <column name="passwd" type="string"/>
-        <column name="name" type="string"/>
-        <column name="code" type="string"/>
+        <column name="account" type="string" length="30"/>
+        <column name="email" type="string" length="50"/>
+        <column name="passwd" type="string" length="30"/>
+        <column name="name" type="string" length="30"/>
+        <column name="code" type="string" length="20"/>
+        <column name="role" type="int32"/>
         <column name="state" type="int32"/>
+        <column name="login_time" type="datetime"/>
         <column name="is_deleted" type="int32"/>
         <column name="create_time" type="datetime" default="current_timestamp"/>
-        <column name="update_time" type="datetime" default="current_timestamp"/>
+        <column name="update_time" type="datetime" update="current_timestamp"/>
     </columns>
     <indexs>
         <index name="pk" cols="id" type="pk"/>

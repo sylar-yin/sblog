@@ -13,6 +13,4 @@ public:
     bool onServerUp() override;
 };
 
-sylar::SQLite3::ptr GetSQLite3();
-
 }

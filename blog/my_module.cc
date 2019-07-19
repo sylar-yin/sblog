@@ -3,8 +3,24 @@
 #include "sylar/log.h"
 #include "blog/data/user_info.h"
 #include "sylar/application.h"
+#include "blog/servlets/user_active_servlet.h"
 #include "blog/servlets/user_create_servlet.h"
+#include "blog/servlets/user_change_passwd_servlet.h"
+#include "blog/servlets/user_exists_servlet.h"
+#include "blog/servlets/user_forget_passwd_servlet.h"
+#include "blog/servlets/user_info_servlet.h"
+#include "blog/servlets/user_login_servlet.h"
+#include "blog/servlets/user_logout_servlet.h"
+#include "blog/servlets/user_query_servlet.h"
+#include "blog/servlets/user_update_servlet.h"
+#include "blog/manager/article_category_rel_manager.h"
+#include "blog/manager/article_label_rel_manager.h"
+#include "blog/manager/article_manager.h"
+#include "blog/manager/category_manager.h"
+#include "blog/manager/comment_manager.h"
+#include "blog/manager/label_manager.h"
 #include "blog/manager/user_manager.h"
+#include "blog/util.h"
 
 namespace blog {
 
@@ -51,10 +67,19 @@ bool MyModule::onServerReady() {
                 << " failed";
             return false;
         }
-        if(blog::data::UserInfoDao::CreateTable(db)) {
-            SYLAR_LOG_ERROR(g_logger) << "create table user failed";
-            return false;
+#define XX(clazz, t) \
+        if(blog::data::clazz::CreateTableSQLite3(db)) { \
+            SYLAR_LOG_ERROR(g_logger) << "create table " t "failed"; \
+            return false; \
         }
+        XX(UserInfoDao, "user");
+        XX(ArticleInfoDao, "article");
+        XX(ArticleCategoryRelInfoDao, "article_category_rel");
+        XX(ArticleLabelRelInfoDao, "article_label_rel");
+        XX(CategoryInfoDao, "category");
+        XX(LabelInfoDao, "label");
+        XX(CommentInfoDao, "comment");
+#undef XX
         SYLAR_LOG_INFO(g_logger) << "init database end";
     }
 
@@ -64,9 +89,18 @@ bool MyModule::onServerReady() {
         return false;
     }
 
-    if(!UserMgr::GetInstance()->loadAll()) {
-        SYLAR_LOG_ERROR(g_logger) << "user load all fail";
+#define XX(clazz) \
+    if(!clazz::GetInstance()->loadAll()) { \
+        SYLAR_LOG_ERROR(g_logger) << #clazz " load all fail"; \
     }
+    XX(UserMgr);
+    XX(ArticleMgr);
+    XX(ArticleCategoryRelMgr);
+    XX(ArticleLabelRelMgr);
+    XX(CategoryMgr);
+    XX(LabelMgr);
+    XX(CommentMgr);
+#undef XX
 
     for(auto& i : servers) {
         auto hs = std::dynamic_pointer_cast<sylar::http::HttpServer>(i);
@@ -75,10 +109,15 @@ bool MyModule::onServerReady() {
 #define XX(clazz) sylar::http::Servlet::ptr(new servlet::clazz)
 
         dp->addServlet("/user/create", XX(UserCreateServlet));
-        dp->addServlet("/user/active", handle_request);
-        dp->addServlet("/user/login", handle_request);
-        dp->addServlet("/user/update", handle_request);
-        dp->addServlet("/user/exists", handle_request);
+        dp->addServlet("/user/active", XX(UserActiveServlet));
+        dp->addServlet("/user/login", XX(UserLoginServlet));
+        dp->addServlet("/user/logout", XX(UserLogoutServlet));
+        dp->addServlet("/user/exists", XX(UserExistsServlet));
+        dp->addServlet("/user/info", XX(UserInfoServlet));
+        dp->addServlet("/user/update", XX(UserUpdateServlet));
+        dp->addServlet("/user/forget_passwd", XX(UserForgetPasswdServlet));
+        dp->addServlet("/user/change_passwd", XX(UserChangePasswdServlet));
+        dp->addServlet("/user/query", XX(UserQueryServlet));
     }
     return true;
 }
@@ -86,13 +125,6 @@ bool MyModule::onServerReady() {
 bool MyModule::onServerUp() {
     SYLAR_LOG_INFO(g_logger) << "onServerUp";
     return true;
-}
-
-sylar::SQLite3::ptr GetSQLite3() {
-    auto work_path = sylar::Config::Lookup<std::string>("server.work_path");
-    auto db_path = work_path->getValue() + "/" + g_sqlite3_db_name->getValue();
-    auto db = sylar::SQLite3::Create(db_path);
-    return db;
 }
 
 }
