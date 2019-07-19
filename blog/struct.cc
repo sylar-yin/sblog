@@ -27,12 +27,12 @@ std::string Result::toJsonString() const {
     if(!jsondata.isNull()) {
         v["data"] = jsondata;
     } else {
-        if(!datas.empty()) {
-            auto& d = v["data"];
-            for(auto& i : datas) {
-                d[i.first] = i.second;
-            }
-        }
+        //if(!datas.empty()) {
+        //    auto& d = v["data"];
+        //    for(auto& i : datas) {
+        //        d[i.first] = i.second;
+        //    }
+        //}
     }
     return sylar::JsonUtil::ToString(v);
 }
@@ -52,6 +52,8 @@ int32_t BlogServlet::handle(sylar::http::HttpRequest::ptr request
     Result::ptr result = std::make_shared<Result>();
     if(handlePre(request, response, session, result)) {
         handle(request, response, session, result);
+    } else {
+        response->setBody(result->toJsonString());
     }
     handlePost(request, response, session, result);
     return 0;
@@ -94,7 +96,7 @@ sylar::http::SessionData::ptr BlogServlet::getSessionData(sylar::http::HttpReque
     }
     sylar::http::SessionData::ptr data(new sylar::http::SessionData(true));
     sylar::http::SessionDataMgr::GetInstance()->add(data);
-    response->setCookie(CookieKey::SESSION_KEY, data->getId());
+    response->setCookie(CookieKey::SESSION_KEY, data->getId(), 0, "/");
     request->setCookie(CookieKey::SESSION_KEY, data->getId());
     return data;
 }
@@ -147,6 +149,7 @@ bool BlogServlet::initLogin(sylar::http::HttpRequest::ptr request
 
         uinfo->setLoginTime(time(0));
         data::UserInfoDao::Update(uinfo, getDB());
+        is_login = true;
     } while(0);
     data->setData(CookieKey::IS_AUTH, (int32_t)1);
     return is_login;
@@ -154,6 +157,37 @@ bool BlogServlet::initLogin(sylar::http::HttpRequest::ptr request
 
 sylar::IDB::ptr BlogServlet::getDB() {
     return GetDB();
+}
+
+BlogLoginedServlet::BlogLoginedServlet(const std::string& name)
+    :BlogServlet(name) {
+}
+
+bool BlogLoginedServlet::handlePre(sylar::http::HttpRequest::ptr request
+                                   ,sylar::http::HttpResponse::ptr response
+                                   ,sylar::http::HttpSession::ptr session
+                                   ,Result::ptr result) {
+    if(!initLogin(request, response)) {
+        result->setResult(410, "not login");
+        return false;
+    }
+    if(request->getMethod() != sylar::http::HttpMethod::GET
+            && request->getMethod() != sylar::http::HttpMethod::POST) {
+        result->setResult(300, "invalid method");
+        return false;
+    }
+    return true;
+}
+
+int64_t BlogLoginedServlet::getUserId(sylar::http::HttpRequest::ptr request) {
+    std::string sid = request->getCookie(CookieKey::SESSION_KEY);
+    if(!sid.empty()) {
+        auto data = sylar::http::SessionDataMgr::GetInstance()->get(sid);
+        if(data) {
+            return data->getData<int64_t>(CookieKey::USER_ID);
+        }
+    }
+    return 0;
 }
 
 }

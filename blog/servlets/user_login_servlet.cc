@@ -53,10 +53,10 @@ int32_t UserLoginServlet::handle(sylar::http::HttpRequest::ptr request
         SYLAR_LOG_INFO(g_logger) << "update used: " << (sylar::GetCurrentUS() - ts1) / 1000.0 << " ms";
         result->setResult(200, "ok");
         int64_t token_time = time(0) + 3600 * 24;
-        response->setCookie(CookieKey::USER_ID, std::to_string(info->getId()), token_time);
+        response->setCookie(CookieKey::USER_ID, std::to_string(info->getId()), token_time, "/");
         auto token = UserManager::GetToken(info, token_time);
-        response->setCookie(CookieKey::TOKEN, token, token_time);
-        response->setCookie(CookieKey::TOKEN_TIME, std::to_string(token_time), token_time);
+        response->setCookie(CookieKey::TOKEN, token, token_time, "/");
+        response->setCookie(CookieKey::TOKEN_TIME, std::to_string(token_time), token_time, "/");
         sdata->setData(CookieKey::USER_ID, info->getId());
     } while(false);
     response->setBody(result->toJsonString());

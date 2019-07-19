@@ -153,6 +153,19 @@ int ArticleCategoryRelInfoDao::DeleteByArticleId( const int64_t& article_id, syl
     return stmt->execute();
 }
 
+int ArticleCategoryRelInfoDao::DeleteByArticleIdCategoryId( const int64_t& article_id,  const int64_t& category_id, sylar::IDB::ptr conn) {
+    std::string sql = "delete from article_category_rel where article_id = ? and category_id = ?";
+    auto stmt = conn->prepare(sql);
+    if(!stmt) {
+        SYLAR_LOG_ERROR(g_logger) << "stmt=" << sql
+                 << " errno=" << conn->getErrno() << " errstr=" << conn->getErrStr();
+        return conn->getErrno();
+    }
+    stmt->bindInt64(1, article_id);
+    stmt->bindInt64(1, category_id);
+    return stmt->execute();
+}
+
 int ArticleCategoryRelInfoDao::QueryAll(std::vector<ArticleCategoryRelInfo::ptr>& results, sylar::IDB::ptr conn) {
     std::string sql = "select id, article_id, category_id, is_deleted, publish_time, create_time, update_time from article_category_rel";
     auto stmt = conn->prepare(sql);
@@ -233,10 +246,38 @@ int ArticleCategoryRelInfoDao::QueryByArticleId(std::vector<ArticleCategoryRelIn
     return 0;
 }
 
+ArticleCategoryRelInfo::ptr ArticleCategoryRelInfoDao::QueryByArticleIdCategoryId( const int64_t& article_id,  const int64_t& category_id, sylar::IDB::ptr conn) {
+    std::string sql = "select id, article_id, category_id, is_deleted, publish_time, create_time, update_time from article_category_rel where article_id = ? and category_id = ?";
+    auto stmt = conn->prepare(sql);
+    if(!stmt) {
+        SYLAR_LOG_ERROR(g_logger) << "stmt=" << sql
+                 << " errno=" << conn->getErrno() << " errstr=" << conn->getErrStr();
+        return nullptr;
+    }
+    stmt->bindInt64(1, article_id);
+    stmt->bindInt64(2, category_id);
+    auto rt = stmt->query();
+    if(!rt) {
+        return nullptr;
+    }
+    if(!rt->next()) {
+        return nullptr;
+    }
+    ArticleCategoryRelInfo::ptr v(new ArticleCategoryRelInfo);
+    v->m_id = rt->getInt64(0);
+    v->m_articleId = rt->getInt64(1);
+    v->m_categoryId = rt->getInt64(2);
+    v->m_isDeleted = rt->getInt32(3);
+    v->m_publishTime = rt->getTime(4);
+    v->m_createTime = rt->getTime(5);
+    v->m_updateTime = rt->getTime(6);
+    return v;
+}
+
 int ArticleCategoryRelInfoDao::CreateTableSQLite3(sylar::IDB::ptr conn) {
-    return conn->execute("CREATE TABLE article_category_rel(id INTEGER PRIMARY KEY AUTOINCREMENT, article_id INTEGER NOT NULL DEFAULT '', category_id INTEGER NOT NULL DEFAULT '', is_deleted INTEGER NOT NULL DEFAULT 0, publish_time TIMESTAMP NOT NULL DEFAULT '1980-01-01 00:00:00', create_time TIMESTAMP NOT NULL DEFAULT current_timestamp, update_time TIMESTAMP NOT NULL DEFAULT '1980-01-01 00:00:00');CREATE INDEX article_category_rel_article_id ON article_category_rel(article_id);");
+    return conn->execute("CREATE TABLE article_category_rel(id INTEGER PRIMARY KEY AUTOINCREMENT, article_id INTEGER NOT NULL DEFAULT '', category_id INTEGER NOT NULL DEFAULT '', is_deleted INTEGER NOT NULL DEFAULT 0, publish_time TIMESTAMP NOT NULL DEFAULT '1980-01-01 00:00:00', create_time TIMESTAMP NOT NULL DEFAULT current_timestamp, update_time TIMESTAMP NOT NULL DEFAULT '1980-01-01 00:00:00');CREATE INDEX article_category_rel_article_id ON article_category_rel(article_id);CREATE UNIQUE INDEX article_category_rel_article_id_category_id ON article_category_rel(article_id,category_id);");
 }int ArticleCategoryRelInfoDao::CreateTableMySQL(sylar::IDB::ptr conn) {
-    return conn->execute("CREATE TABLE article_category_rel(id bigint AUTO_INCREMENT, article_id bigint NOT NULL DEFAULT '', category_id bigint NOT NULL DEFAULT '', is_deleted int NOT NULL DEFAULT 0, publish_time timestamp NOT NULL DEFAULT '1980-01-01 00:00:00', create_time timestamp NOT NULL DEFAULT current_timestamp, update_time timestamp NOT NULL DEFAULT '1980-01-01 00:00:00' ON UPDATE current_timestamp , PRIMARY KEY(id), KEY article_category_rel_article_id (article_id))");
+    return conn->execute("CREATE TABLE article_category_rel(id bigint AUTO_INCREMENT, article_id bigint NOT NULL DEFAULT '', category_id bigint NOT NULL DEFAULT '', is_deleted int NOT NULL DEFAULT 0, publish_time timestamp NOT NULL DEFAULT '1980-01-01 00:00:00', create_time timestamp NOT NULL DEFAULT current_timestamp, update_time timestamp NOT NULL DEFAULT '1980-01-01 00:00:00' ON UPDATE current_timestamp , PRIMARY KEY(id), KEY article_category_rel_article_id (article_id), UNIQUE KEY article_category_rel_article_id_category_id (article_id,category_id))");
 }
 } //namespace data
 } //namespace blog

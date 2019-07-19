@@ -10,5 +10,6 @@
     <indexs>
         <index name="pk" cols="id" type="pk"/>
         <index name="article_id" cols="article_id" type="index"/>
+        <index name="article_id_label_id" cols="article_id,label_id" type="uniq"/>
     </indexs>
 </table>

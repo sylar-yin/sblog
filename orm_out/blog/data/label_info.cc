@@ -144,6 +144,19 @@ int LabelInfoDao::DeleteByUserId( const int64_t& user_id, sylar::IDB::ptr conn) 
     return stmt->execute();
 }
 
+int LabelInfoDao::DeleteByUserIdName( const int64_t& user_id,  const std::string& name, sylar::IDB::ptr conn) {
+    std::string sql = "delete from label where user_id = ? and name = ?";
+    auto stmt = conn->prepare(sql);
+    if(!stmt) {
+        SYLAR_LOG_ERROR(g_logger) << "stmt=" << sql
+                 << " errno=" << conn->getErrno() << " errstr=" << conn->getErrStr();
+        return conn->getErrno();
+    }
+    stmt->bindInt64(1, user_id);
+    stmt->bindString(1, name);
+    return stmt->execute();
+}
+
 int LabelInfoDao::QueryAll(std::vector<LabelInfo::ptr>& results, sylar::IDB::ptr conn) {
     std::string sql = "select id, user_id, name, is_deleted, create_time, update_time from label";
     auto stmt = conn->prepare(sql);
@@ -221,10 +234,37 @@ int LabelInfoDao::QueryByUserId(std::vector<LabelInfo::ptr>& results,  const int
     return 0;
 }
 
+LabelInfo::ptr LabelInfoDao::QueryByUserIdName( const int64_t& user_id,  const std::string& name, sylar::IDB::ptr conn) {
+    std::string sql = "select id, user_id, name, is_deleted, create_time, update_time from label where user_id = ? and name = ?";
+    auto stmt = conn->prepare(sql);
+    if(!stmt) {
+        SYLAR_LOG_ERROR(g_logger) << "stmt=" << sql
+                 << " errno=" << conn->getErrno() << " errstr=" << conn->getErrStr();
+        return nullptr;
+    }
+    stmt->bindInt64(1, user_id);
+    stmt->bindString(2, name);
+    auto rt = stmt->query();
+    if(!rt) {
+        return nullptr;
+    }
+    if(!rt->next()) {
+        return nullptr;
+    }
+    LabelInfo::ptr v(new LabelInfo);
+    v->m_id = rt->getInt64(0);
+    v->m_userId = rt->getInt64(1);
+    v->m_name = rt->getString(2);
+    v->m_isDeleted = rt->getInt32(3);
+    v->m_createTime = rt->getTime(4);
+    v->m_updateTime = rt->getTime(5);
+    return v;
+}
+
 int LabelInfoDao::CreateTableSQLite3(sylar::IDB::ptr conn) {
-    return conn->execute("CREATE TABLE label(id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER NOT NULL DEFAULT '', name TEXT NOT NULL DEFAULT '', is_deleted INTEGER NOT NULL DEFAULT 0, create_time TIMESTAMP NOT NULL DEFAULT current_timestamp, update_time TIMESTAMP NOT NULL DEFAULT '1980-01-01 00:00:00');CREATE INDEX label_user_id ON label(user_id);");
+    return conn->execute("CREATE TABLE label(id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER NOT NULL DEFAULT '', name TEXT NOT NULL DEFAULT '', is_deleted INTEGER NOT NULL DEFAULT 0, create_time TIMESTAMP NOT NULL DEFAULT current_timestamp, update_time TIMESTAMP NOT NULL DEFAULT '1980-01-01 00:00:00');CREATE INDEX label_user_id ON label(user_id);CREATE UNIQUE INDEX label_user_id_name ON label(user_id,name);");
 }int LabelInfoDao::CreateTableMySQL(sylar::IDB::ptr conn) {
-    return conn->execute("CREATE TABLE label(id bigint AUTO_INCREMENT, user_id bigint NOT NULL DEFAULT '', name varchar(20) NOT NULL DEFAULT '', is_deleted int NOT NULL DEFAULT 0, create_time timestamp NOT NULL DEFAULT current_timestamp, update_time timestamp NOT NULL DEFAULT '1980-01-01 00:00:00' ON UPDATE current_timestamp , PRIMARY KEY(id), KEY label_user_id (user_id))");
+    return conn->execute("CREATE TABLE label(id bigint AUTO_INCREMENT, user_id bigint NOT NULL DEFAULT '', name varchar(20) NOT NULL DEFAULT '', is_deleted int NOT NULL DEFAULT 0, create_time timestamp NOT NULL DEFAULT current_timestamp, update_time timestamp NOT NULL DEFAULT '1980-01-01 00:00:00' ON UPDATE current_timestamp , PRIMARY KEY(id), KEY label_user_id (user_id), UNIQUE KEY label_user_id_name (user_id,name))");
 }
 } //namespace data
 } //namespace blog

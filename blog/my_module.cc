@@ -3,6 +3,21 @@
 #include "sylar/log.h"
 #include "blog/data/user_info.h"
 #include "sylar/application.h"
+#include "blog/servlets/article_create_servlet.h"
+#include "blog/servlets/article_delete_servlet.h"
+#include "blog/servlets/article_detail_servlet.h"
+#include "blog/servlets/article_query_servlet.h"
+#include "blog/servlets/article_publish_servlet.h"
+#include "blog/servlets/article_update_category_servlet.h"
+#include "blog/servlets/article_update_label_servlet.h"
+#include "blog/servlets/article_verify_list_servlet.h"
+#include "blog/servlets/article_verify_servlet.h"
+#include "blog/servlets/category_create_servlet.h"
+#include "blog/servlets/category_delete_servlet.h"
+#include "blog/servlets/category_query_servlet.h"
+#include "blog/servlets/label_create_servlet.h"
+#include "blog/servlets/label_delete_servlet.h"
+#include "blog/servlets/label_query_servlet.h"
 #include "blog/servlets/user_active_servlet.h"
 #include "blog/servlets/user_create_servlet.h"
 #include "blog/servlets/user_change_passwd_servlet.h"
@@ -69,7 +84,7 @@ bool MyModule::onServerReady() {
         }
 #define XX(clazz, t) \
         if(blog::data::clazz::CreateTableSQLite3(db)) { \
-            SYLAR_LOG_ERROR(g_logger) << "create table " t "failed"; \
+            SYLAR_LOG_ERROR(g_logger) << "create table " t " failed"; \
             return false; \
         }
         XX(UserInfoDao, "user");
@@ -107,7 +122,7 @@ bool MyModule::onServerReady() {
         auto dp = hs->getServletDispatch();
 
 #define XX(clazz) sylar::http::Servlet::ptr(new servlet::clazz)
-
+        //user system
         dp->addServlet("/user/create", XX(UserCreateServlet));
         dp->addServlet("/user/active", XX(UserActiveServlet));
         dp->addServlet("/user/login", XX(UserLoginServlet));
@@ -118,6 +133,27 @@ bool MyModule::onServerReady() {
         dp->addServlet("/user/forget_passwd", XX(UserForgetPasswdServlet));
         dp->addServlet("/user/change_passwd", XX(UserChangePasswdServlet));
         dp->addServlet("/user/query", XX(UserQueryServlet));
+
+        //aritcle system
+        dp->addServlet("/category/create", XX(CategoryCreateServlet));
+        dp->addServlet("/category/delete", XX(CategoryDeleteServlet));
+        dp->addServlet("/category/query",  XX(CategoryQueryServlet));
+
+        dp->addServlet("/label/create", XX(LabelCreateServlet));
+        dp->addServlet("/label/delete", XX(LabelDeleteServlet));
+        dp->addServlet("/label/query",  XX(LabelQueryServlet));
+
+        dp->addServlet("/article/create", XX(ArticleCreateServlet));
+        dp->addServlet("/article/delete", XX(ArticleDeleteServlet));
+        dp->addServlet("/article/query",  XX(ArticleQueryServlet));
+        dp->addServlet("/article/detail",  XX(ArticleDetailServlet));
+
+        dp->addServlet("/article/update_category",  XX(ArticleUpdateCategoryServlet));
+        dp->addServlet("/article/update_label",  XX(ArticleUpdateLabelServlet));
+        dp->addServlet("/article/publish",  XX(ArticlePublishServlet));
+
+        dp->addServlet("/article/verify",  XX(ArticleVerifyServlet));
+        dp->addServlet("/article/verify_list",  XX(ArticleVerifyListServlet));
     }
     return true;
 }

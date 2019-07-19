@@ -144,6 +144,19 @@ int ArticleLabelRelInfoDao::DeleteByArticleId( const int64_t& article_id, sylar:
     return stmt->execute();
 }
 
+int ArticleLabelRelInfoDao::DeleteByArticleIdLabelId( const int64_t& article_id,  const int64_t& label_id, sylar::IDB::ptr conn) {
+    std::string sql = "delete from article_label_rel where article_id = ? and label_id = ?";
+    auto stmt = conn->prepare(sql);
+    if(!stmt) {
+        SYLAR_LOG_ERROR(g_logger) << "stmt=" << sql
+                 << " errno=" << conn->getErrno() << " errstr=" << conn->getErrStr();
+        return conn->getErrno();
+    }
+    stmt->bindInt64(1, article_id);
+    stmt->bindInt64(1, label_id);
+    return stmt->execute();
+}
+
 int ArticleLabelRelInfoDao::QueryAll(std::vector<ArticleLabelRelInfo::ptr>& results, sylar::IDB::ptr conn) {
     std::string sql = "select id, article_id, label_id, is_deleted, create_time, update_time from article_label_rel";
     auto stmt = conn->prepare(sql);
@@ -221,10 +234,37 @@ int ArticleLabelRelInfoDao::QueryByArticleId(std::vector<ArticleLabelRelInfo::pt
     return 0;
 }
 
+ArticleLabelRelInfo::ptr ArticleLabelRelInfoDao::QueryByArticleIdLabelId( const int64_t& article_id,  const int64_t& label_id, sylar::IDB::ptr conn) {
+    std::string sql = "select id, article_id, label_id, is_deleted, create_time, update_time from article_label_rel where article_id = ? and label_id = ?";
+    auto stmt = conn->prepare(sql);
+    if(!stmt) {
+        SYLAR_LOG_ERROR(g_logger) << "stmt=" << sql
+                 << " errno=" << conn->getErrno() << " errstr=" << conn->getErrStr();
+        return nullptr;
+    }
+    stmt->bindInt64(1, article_id);
+    stmt->bindInt64(2, label_id);
+    auto rt = stmt->query();
+    if(!rt) {
+        return nullptr;
+    }
+    if(!rt->next()) {
+        return nullptr;
+    }
+    ArticleLabelRelInfo::ptr v(new ArticleLabelRelInfo);
+    v->m_id = rt->getInt64(0);
+    v->m_articleId = rt->getInt64(1);
+    v->m_labelId = rt->getInt64(2);
+    v->m_isDeleted = rt->getInt32(3);
+    v->m_createTime = rt->getTime(4);
+    v->m_updateTime = rt->getTime(5);
+    return v;
+}
+
 int ArticleLabelRelInfoDao::CreateTableSQLite3(sylar::IDB::ptr conn) {
-    return conn->execute("CREATE TABLE article_label_rel(id INTEGER PRIMARY KEY AUTOINCREMENT, article_id INTEGER NOT NULL DEFAULT '', label_id INTEGER NOT NULL DEFAULT '', is_deleted INTEGER NOT NULL DEFAULT 0, create_time TIMESTAMP NOT NULL DEFAULT current_timestamp, update_time TIMESTAMP NOT NULL DEFAULT '1980-01-01 00:00:00');CREATE INDEX article_label_rel_article_id ON article_label_rel(article_id);");
+    return conn->execute("CREATE TABLE article_label_rel(id INTEGER PRIMARY KEY AUTOINCREMENT, article_id INTEGER NOT NULL DEFAULT '', label_id INTEGER NOT NULL DEFAULT '', is_deleted INTEGER NOT NULL DEFAULT 0, create_time TIMESTAMP NOT NULL DEFAULT current_timestamp, update_time TIMESTAMP NOT NULL DEFAULT '1980-01-01 00:00:00');CREATE INDEX article_label_rel_article_id ON article_label_rel(article_id);CREATE UNIQUE INDEX article_label_rel_article_id_label_id ON article_label_rel(article_id,label_id);");
 }int ArticleLabelRelInfoDao::CreateTableMySQL(sylar::IDB::ptr conn) {
-    return conn->execute("CREATE TABLE article_label_rel(id bigint AUTO_INCREMENT, article_id bigint NOT NULL DEFAULT '', label_id bigint NOT NULL DEFAULT '', is_deleted int NOT NULL DEFAULT 0, create_time timestamp NOT NULL DEFAULT current_timestamp, update_time timestamp NOT NULL DEFAULT '1980-01-01 00:00:00' ON UPDATE current_timestamp , PRIMARY KEY(id), KEY article_label_rel_article_id (article_id))");
+    return conn->execute("CREATE TABLE article_label_rel(id bigint AUTO_INCREMENT, article_id bigint NOT NULL DEFAULT '', label_id bigint NOT NULL DEFAULT '', is_deleted int NOT NULL DEFAULT 0, create_time timestamp NOT NULL DEFAULT current_timestamp, update_time timestamp NOT NULL DEFAULT '1980-01-01 00:00:00' ON UPDATE current_timestamp , PRIMARY KEY(id), KEY article_label_rel_article_id (article_id), UNIQUE KEY article_label_rel_article_id_label_id (article_id,label_id))");
 }
 } //namespace data
 } //namespace blog

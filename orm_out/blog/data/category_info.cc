@@ -153,6 +153,19 @@ int CategoryInfoDao::DeleteByUserId( const int64_t& user_id, sylar::IDB::ptr con
     return stmt->execute();
 }
 
+int CategoryInfoDao::DeleteByUserIdName( const int64_t& user_id,  const std::string& name, sylar::IDB::ptr conn) {
+    std::string sql = "delete from category where user_id = ? and name = ?";
+    auto stmt = conn->prepare(sql);
+    if(!stmt) {
+        SYLAR_LOG_ERROR(g_logger) << "stmt=" << sql
+                 << " errno=" << conn->getErrno() << " errstr=" << conn->getErrStr();
+        return conn->getErrno();
+    }
+    stmt->bindInt64(1, user_id);
+    stmt->bindString(1, name);
+    return stmt->execute();
+}
+
 int CategoryInfoDao::QueryAll(std::vector<CategoryInfo::ptr>& results, sylar::IDB::ptr conn) {
     std::string sql = "select id, user_id, name, parent_id, is_deleted, create_time, update_time from category";
     auto stmt = conn->prepare(sql);
@@ -233,10 +246,38 @@ int CategoryInfoDao::QueryByUserId(std::vector<CategoryInfo::ptr>& results,  con
     return 0;
 }
 
+CategoryInfo::ptr CategoryInfoDao::QueryByUserIdName( const int64_t& user_id,  const std::string& name, sylar::IDB::ptr conn) {
+    std::string sql = "select id, user_id, name, parent_id, is_deleted, create_time, update_time from category where user_id = ? and name = ?";
+    auto stmt = conn->prepare(sql);
+    if(!stmt) {
+        SYLAR_LOG_ERROR(g_logger) << "stmt=" << sql
+                 << " errno=" << conn->getErrno() << " errstr=" << conn->getErrStr();
+        return nullptr;
+    }
+    stmt->bindInt64(1, user_id);
+    stmt->bindString(2, name);
+    auto rt = stmt->query();
+    if(!rt) {
+        return nullptr;
+    }
+    if(!rt->next()) {
+        return nullptr;
+    }
+    CategoryInfo::ptr v(new CategoryInfo);
+    v->m_id = rt->getInt64(0);
+    v->m_userId = rt->getInt64(1);
+    v->m_name = rt->getString(2);
+    v->m_parentId = rt->getInt64(3);
+    v->m_isDeleted = rt->getInt32(4);
+    v->m_createTime = rt->getTime(5);
+    v->m_updateTime = rt->getTime(6);
+    return v;
+}
+
 int CategoryInfoDao::CreateTableSQLite3(sylar::IDB::ptr conn) {
-    return conn->execute("CREATE TABLE category(id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER NOT NULL DEFAULT '', name TEXT NOT NULL DEFAULT '', parent_id INTEGER NOT NULL DEFAULT '', is_deleted INTEGER NOT NULL DEFAULT 0, create_time TIMESTAMP NOT NULL DEFAULT current_timestamp, update_time TIMESTAMP NOT NULL DEFAULT '1980-01-01 00:00:00');CREATE INDEX category_user_id ON category(user_id);");
+    return conn->execute("CREATE TABLE category(id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER NOT NULL DEFAULT '', name TEXT NOT NULL DEFAULT '', parent_id INTEGER NOT NULL DEFAULT '', is_deleted INTEGER NOT NULL DEFAULT 0, create_time TIMESTAMP NOT NULL DEFAULT current_timestamp, update_time TIMESTAMP NOT NULL DEFAULT '1980-01-01 00:00:00');CREATE INDEX category_user_id ON category(user_id);CREATE UNIQUE INDEX category_user_id_name ON category(user_id,name);");
 }int CategoryInfoDao::CreateTableMySQL(sylar::IDB::ptr conn) {
-    return conn->execute("CREATE TABLE category(id bigint AUTO_INCREMENT, user_id bigint NOT NULL DEFAULT '', name varchar(20) NOT NULL DEFAULT '', parent_id bigint NOT NULL DEFAULT '', is_deleted int NOT NULL DEFAULT 0, create_time timestamp NOT NULL DEFAULT current_timestamp, update_time timestamp NOT NULL DEFAULT '1980-01-01 00:00:00' ON UPDATE current_timestamp , PRIMARY KEY(id), KEY category_user_id (user_id))");
+    return conn->execute("CREATE TABLE category(id bigint AUTO_INCREMENT, user_id bigint NOT NULL DEFAULT '', name varchar(20) NOT NULL DEFAULT '', parent_id bigint NOT NULL DEFAULT '', is_deleted int NOT NULL DEFAULT 0, create_time timestamp NOT NULL DEFAULT current_timestamp, update_time timestamp NOT NULL DEFAULT '1980-01-01 00:00:00' ON UPDATE current_timestamp , PRIMARY KEY(id), KEY category_user_id (user_id), UNIQUE KEY category_user_id_name (user_id,name))");
 }
 } //namespace data
 } //namespace blog

@@ -20,27 +20,23 @@ bool ArticleCategoryRelManager::loadAll() {
     }
 
     std::unordered_map<int64_t, blog::data::ArticleCategoryRelInfo::ptr> datas;
-    std::unordered_map<int64_t, blog::data::ArticleCategoryRelInfo::ptr> articles;
-    std::unordered_map<int64_t, blog::data::ArticleCategoryRelInfo::ptr> categorys;
+    std::unordered_map<int64_t, std::map<int64_t, blog::data::ArticleCategoryRelInfo::ptr> > articles;
 
     for(auto& i : results) {
         datas[i->getId()] = i;
-        articles[i->getArticleId()] = i;
-        categorys[i->getCategoryId()] = i;
+        articles[i->getArticleId()][i->getCategoryId()] = i;
     }
 
     sylar::RWMutex::WriteLock lock(m_mutex);
     m_datas.swap(datas);
     m_articles.swap(articles);
-    m_categorys.swap(categorys);
     return true;
 }
 
 void ArticleCategoryRelManager::add(blog::data::ArticleCategoryRelInfo::ptr info) {
     sylar::RWMutex::WriteLock lock(m_mutex);
     m_datas[info->getId()] = info;
-    m_articles[info->getArticleId()] = info;
-    m_categorys[info->getCategoryId()] = info;
+    m_articles[info->getArticleId()][info->getCategoryId()] = info;
 }
 
 #define XX(map, key) \
@@ -52,12 +48,33 @@ blog::data::ArticleCategoryRelInfo::ptr ArticleCategoryRelManager::get(int64_t i
     XX(m_datas, id);
 }
 
-blog::data::ArticleCategoryRelInfo::ptr ArticleCategoryRelManager::getByArticleId(int64_t id) {
-    XX(m_articles, id);
+bool ArticleCategoryRelManager::listByArticleId(std::vector<data::ArticleCategoryRelInfo::ptr>& infos
+                                                ,int64_t id, bool valid) {
+    sylar::RWMutex::ReadLock lock(m_mutex);
+    auto it = m_articles.find(id);
+    if(it == m_articles.end()) {
+        return nullptr;
+    }
+    for(auto& i : it->second) {
+        if(!valid || !i.second->getIsDeleted()) {
+            infos.push_back(i.second);
+        }
+    }
+    return true;
 }
 
-blog::data::ArticleCategoryRelInfo::ptr ArticleCategoryRelManager::getByCategoryId(int64_t id) {
-    XX(m_categorys, id);
+blog::data::ArticleCategoryRelInfo::ptr ArticleCategoryRelManager::getByArticleIdCategoryId(int64_t article_id
+                    ,int64_t category_id) {
+    sylar::RWMutex::ReadLock lock(m_mutex);
+    auto it = m_articles.find(article_id);
+    if(it == m_articles.end()) {
+        return nullptr;
+    }
+    auto iit = it->second.find(category_id);
+    if(iit == it->second.end()) {
+        return nullptr;
+    }
+    return iit->second;
 }
 
 #undef XX

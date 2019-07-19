@@ -20,11 +20,11 @@ bool CategoryManager::loadAll() {
     }
 
     std::unordered_map<int64_t, blog::data::CategoryInfo::ptr> datas;
-    std::unordered_map<int64_t, blog::data::CategoryInfo::ptr> users;
+    std::unordered_map<int64_t, std::map<std::string, blog::data::CategoryInfo::ptr> > users;
 
     for(auto& i : results) {
         datas[i->getId()] = i;
-        users[i->getUserId()] = i;
+        users[i->getUserId()][i->getName()] = i;
     }
 
     sylar::RWMutex::WriteLock lock(m_mutex);
@@ -36,7 +36,7 @@ bool CategoryManager::loadAll() {
 void CategoryManager::add(blog::data::CategoryInfo::ptr info) {
     sylar::RWMutex::WriteLock lock(m_mutex);
     m_datas[info->getId()] = info;
-    m_users[info->getUserId()] = info;
+    m_users[info->getUserId()][info->getName()] = info;
 }
 
 #define XX(map, key) \
@@ -48,8 +48,44 @@ blog::data::CategoryInfo::ptr CategoryManager::get(int64_t id) {
     XX(m_datas, id);
 }
 
-blog::data::CategoryInfo::ptr CategoryManager::getByUserId(int64_t id) {
-    XX(m_users, id);
+bool CategoryManager::listByUserId(std::vector<blog::data::CategoryInfo::ptr>& infos, int64_t id, bool valid) {
+    sylar::RWMutex::ReadLock lock(m_mutex);
+    auto it = m_users.find(id);
+    if(it == m_users.end()) {
+        return false;
+    }
+    if(valid) {
+        for(auto& i : it->second) {
+            if(i.second->getIsDeleted() == 0) {
+                infos.push_back(i.second);
+            }
+        }
+    } else {
+        for(auto& i : it->second) {
+            infos.push_back(i.second);
+        }
+    }
+    return true;
+}
+
+bool CategoryManager::exists(int64_t id, const std::string& name) {
+    sylar::RWMutex::ReadLock lock(m_mutex);
+    auto it = m_users.find(id);
+    if(it == m_users.end()) {
+        return false;
+    }
+    auto iit = it->second.find(name);
+    return iit != it->second.end();
+}
+
+blog::data::CategoryInfo::ptr CategoryManager::getByUserIdName(int64_t id, const std::string& name) {
+    sylar::RWMutex::ReadLock lock(m_mutex);
+    auto it = m_users.find(id);
+    if(it == m_users.end()) {
+        return nullptr;
+    }
+    auto iit = it->second.find(name);
+    return iit != it->second.end() ? iit->second : nullptr;
 }
 
 #undef XX

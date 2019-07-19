@@ -58,9 +58,11 @@ public:
     static int Delete(const int64_t& id, sylar::IDB::ptr conn);
     static int DeleteById( const int64_t& id, sylar::IDB::ptr conn);
     static int DeleteByArticleId( const int64_t& article_id, sylar::IDB::ptr conn);
+    static int DeleteByArticleIdLabelId( const int64_t& article_id,  const int64_t& label_id, sylar::IDB::ptr conn);
     static int QueryAll(std::vector<ArticleLabelRelInfo::ptr>& results, sylar::IDB::ptr conn);
     static ArticleLabelRelInfo::ptr Query( const int64_t& id, sylar::IDB::ptr conn);
     static int QueryByArticleId(std::vector<ArticleLabelRelInfo::ptr>& results,  const int64_t& article_id, sylar::IDB::ptr conn);
+    static ArticleLabelRelInfo::ptr QueryByArticleIdLabelId( const int64_t& article_id,  const int64_t& label_id, sylar::IDB::ptr conn);
     static int CreateTableSQLite3(sylar::IDB::ptr info);
     static int CreateTableMySQL(sylar::IDB::ptr info);
 };

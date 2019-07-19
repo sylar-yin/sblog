@@ -16,18 +16,24 @@ struct Result {
     int32_t code;
     int64_t used;
     std::string msg;
-    std::map<std::string, std::string> datas;
+    //std::map<std::string, std::string> datas;
     Json::Value jsondata;
 
     template<class T>
     void set(const std::string& key, const T& v) {
-        datas[key] = std::to_string(v);
+        //datas[key] = std::to_string(v);
+        jsondata[key] = v;
     }
     void set(const std::string& key, const char* v) {
-        datas[key] = v;
+        jsondata[key] = v;
     }
     void set(const std::string& key, const std::string& v) {
-        datas[key] = v;
+        jsondata[key] = v;
+    }
+
+    template<class T>
+    void append(const std::string& key, const T& v) {
+        jsondata[key].append(v);
     }
 
     void setResult(int32_t c, const std::string& m);
@@ -69,6 +75,18 @@ protected:
                    ,sylar::http::HttpResponse::ptr response);
 protected:
     sylar::IDB::ptr getDB();
+};
+
+class BlogLoginedServlet : public BlogServlet {
+public:
+    BlogLoginedServlet(const std::string& name);
+
+    bool handlePre(sylar::http::HttpRequest::ptr request
+                   ,sylar::http::HttpResponse::ptr response
+                   ,sylar::http::HttpSession::ptr session
+                   ,Result::ptr result) override;
+
+    int64_t getUserId(sylar::http::HttpRequest::ptr request);
 };
 
 }

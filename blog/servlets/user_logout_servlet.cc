@@ -25,9 +25,9 @@ int32_t UserLogoutServlet::handle(sylar::http::HttpRequest::ptr request
 
         result->setResult(200, "ok");
         int64_t token_time = time(0) - 3600 * 24;
-        response->setCookie(CookieKey::USER_ID, "", token_time);
-        response->setCookie(CookieKey::TOKEN, "", token_time);
-        response->setCookie(CookieKey::TOKEN_TIME, "", token_time);
+        response->setCookie(CookieKey::USER_ID, "", token_time, "/");
+        response->setCookie(CookieKey::TOKEN, "", token_time, "/");
+        response->setCookie(CookieKey::TOKEN_TIME, "", token_time, "/");
         sdata->setData(CookieKey::USER_ID, (int64_t)0);
         sylar::http::SessionDataMgr::GetInstance()->del(sdata->getId());
     } while(false);

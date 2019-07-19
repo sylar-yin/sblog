@@ -43,6 +43,21 @@ set(LIB_SRC
         blog/manager/comment_manager.cc
         blog/manager/label_manager.cc
         blog/manager/user_manager.cc
+        blog/servlets/article_create_servlet.cc
+        blog/servlets/article_delete_servlet.cc
+        blog/servlets/article_detail_servlet.cc
+        blog/servlets/article_publish_servlet.cc
+        blog/servlets/article_query_servlet.cc
+        blog/servlets/article_update_category_servlet.cc
+        blog/servlets/article_update_label_servlet.cc
+        blog/servlets/article_verify_list_servlet.cc
+        blog/servlets/article_verify_servlet.cc
+        blog/servlets/category_create_servlet.cc
+        blog/servlets/category_delete_servlet.cc
+        blog/servlets/category_query_servlet.cc
+        blog/servlets/label_create_servlet.cc
+        blog/servlets/label_delete_servlet.cc
+        blog/servlets/label_query_servlet.cc
         blog/servlets/user_active_servlet.cc
         blog/servlets/user_create_servlet.cc
         blog/servlets/user_change_passwd_servlet.cc

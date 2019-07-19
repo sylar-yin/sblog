@@ -11,5 +11,6 @@
     <indexs>
         <index name="pk" cols="id" type="pk"/>
         <index name="user_id" cols="user_id" type="index"/>
+        <index name="user_id_name" cols="user_id,name" type="uniq"/>
     </indexs>
 </table>
