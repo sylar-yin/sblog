@@ -42,7 +42,8 @@ void ArticleManager::add(blog::data::ArticleInfo::ptr info) {
     sylar::RWMutex::WriteLock lock(m_mutex);
     m_datas[info->getId()] = info;
     m_users[info->getUserId()][info->getId()] = info;
-    if(info->getState() == 1) {
+    if(info->getState() == 1
+            && info->getIsDeleted() == 0) {
         m_verifys[info->getId()] = info;
     }
 }

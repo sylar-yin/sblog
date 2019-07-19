@@ -13,11 +13,19 @@ public:
     bool loadAll();
     void add(blog::data::CommentInfo::ptr info);
     blog::data::CommentInfo::ptr get(int64_t id);
-    blog::data::CommentInfo::ptr getByArticleId(int64_t id);
+    int64_t listByArticleId(std::vector<blog::data::CommentInfo::ptr>& infos,
+            int64_t article_id, int64_t offset, int64_t size, bool valid);
+
+    void delVerify(int64_t id);
+    void addVerify(data::CommentInfo::ptr info);
+
+    int64_t listVerifyPages(std::vector<data::CommentInfo::ptr>& infos
+                            ,int32_t offset, int32_t size);
 private:
     sylar::RWMutex m_mutex;
     std::unordered_map<int64_t, blog::data::CommentInfo::ptr> m_datas;
-    std::unordered_map<int64_t, blog::data::CommentInfo::ptr> m_articles;
+    std::unordered_map<int64_t, std::map<int64_t, blog::data::CommentInfo::ptr> > m_articles;
+    std::map<int64_t, blog::data::CommentInfo::ptr> m_verifys;
 };
 
 typedef sylar::Singleton<CommentManager> CommentMgr;

@@ -15,6 +15,11 @@
 #include "blog/servlets/category_create_servlet.h"
 #include "blog/servlets/category_delete_servlet.h"
 #include "blog/servlets/category_query_servlet.h"
+#include "blog/servlets/comment_create_servlet.h"
+#include "blog/servlets/comment_delete_servlet.h"
+#include "blog/servlets/comment_verify_servlet.h"
+#include "blog/servlets/comment_verify_list_servlet.h"
+#include "blog/servlets/comment_query_servlet.h"
 #include "blog/servlets/label_create_servlet.h"
 #include "blog/servlets/label_delete_servlet.h"
 #include "blog/servlets/label_query_servlet.h"
@@ -121,39 +126,47 @@ bool MyModule::onServerReady() {
         auto hs = std::dynamic_pointer_cast<sylar::http::HttpServer>(i);
         auto dp = hs->getServletDispatch();
 
-#define XX(clazz) sylar::http::Servlet::ptr(new servlet::clazz)
+//#define XX(clazz) sylar::http::Servlet::ptr(new servlet::clazz)
+#define XX(uri, clazz) dp->addServletCreator<servlet::clazz>(uri)
         //user system
-        dp->addServlet("/user/create", XX(UserCreateServlet));
-        dp->addServlet("/user/active", XX(UserActiveServlet));
-        dp->addServlet("/user/login", XX(UserLoginServlet));
-        dp->addServlet("/user/logout", XX(UserLogoutServlet));
-        dp->addServlet("/user/exists", XX(UserExistsServlet));
-        dp->addServlet("/user/info", XX(UserInfoServlet));
-        dp->addServlet("/user/update", XX(UserUpdateServlet));
-        dp->addServlet("/user/forget_passwd", XX(UserForgetPasswdServlet));
-        dp->addServlet("/user/change_passwd", XX(UserChangePasswdServlet));
-        dp->addServlet("/user/query", XX(UserQueryServlet));
+        XX("/user/create", UserCreateServlet);
+        XX("/user/active", UserActiveServlet);
+        XX("/user/login", UserLoginServlet);
+        XX("/user/logout", UserLogoutServlet);
+        XX("/user/exists", UserExistsServlet);
+        XX("/user/info", UserInfoServlet);
+        XX("/user/update", UserUpdateServlet);
+        XX("/user/forget_passwd", UserForgetPasswdServlet);
+        XX("/user/change_passwd", UserChangePasswdServlet);
+        XX("/user/query", UserQueryServlet);
 
         //aritcle system
-        dp->addServlet("/category/create", XX(CategoryCreateServlet));
-        dp->addServlet("/category/delete", XX(CategoryDeleteServlet));
-        dp->addServlet("/category/query",  XX(CategoryQueryServlet));
+        XX("/category/create", CategoryCreateServlet);
+        XX("/category/delete", CategoryDeleteServlet);
+        XX("/category/query",  CategoryQueryServlet);
 
-        dp->addServlet("/label/create", XX(LabelCreateServlet));
-        dp->addServlet("/label/delete", XX(LabelDeleteServlet));
-        dp->addServlet("/label/query",  XX(LabelQueryServlet));
+        XX("/label/create", LabelCreateServlet);
+        XX("/label/delete", LabelDeleteServlet);
+        XX("/label/query",  LabelQueryServlet);
 
-        dp->addServlet("/article/create", XX(ArticleCreateServlet));
-        dp->addServlet("/article/delete", XX(ArticleDeleteServlet));
-        dp->addServlet("/article/query",  XX(ArticleQueryServlet));
-        dp->addServlet("/article/detail",  XX(ArticleDetailServlet));
+        XX("/article/create", ArticleCreateServlet);
+        XX("/article/delete", ArticleDeleteServlet);
+        XX("/article/query",  ArticleQueryServlet);
+        XX("/article/detail",  ArticleDetailServlet);
 
-        dp->addServlet("/article/update_category",  XX(ArticleUpdateCategoryServlet));
-        dp->addServlet("/article/update_label",  XX(ArticleUpdateLabelServlet));
-        dp->addServlet("/article/publish",  XX(ArticlePublishServlet));
+        XX("/article/update_category",  ArticleUpdateCategoryServlet);
+        XX("/article/update_label",  ArticleUpdateLabelServlet);
+        XX("/article/publish",  ArticlePublishServlet);
 
-        dp->addServlet("/article/verify",  XX(ArticleVerifyServlet));
-        dp->addServlet("/article/verify_list",  XX(ArticleVerifyListServlet));
+        XX("/article/verify",  ArticleVerifyServlet);
+        XX("/article/verify_list",  ArticleVerifyListServlet);
+
+
+        XX("/comment/create",       CommentCreateServlet);
+        XX("/comment/delete",       CommentDeleteServlet);
+        XX("/comment/verify",       CommentVerifyServlet);
+        XX("/comment/verify_list",  CommentVerifyListServlet);
+        XX("/comment/query",        CommentQueryServlet);
     }
     return true;
 }

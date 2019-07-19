@@ -44,6 +44,11 @@ set(LIB_SRC
         blog/manager/label_manager.cc
         blog/manager/user_manager.cc
         blog/servlets/article_create_servlet.cc
+        blog/servlets/comment_create_servlet.cc
+        blog/servlets/comment_delete_servlet.cc
+        blog/servlets/comment_verify_servlet.cc
+        blog/servlets/comment_verify_list_servlet.cc
+        blog/servlets/comment_query_servlet.cc
         blog/servlets/article_delete_servlet.cc
         blog/servlets/article_detail_servlet.cc
         blog/servlets/article_publish_servlet.cc
