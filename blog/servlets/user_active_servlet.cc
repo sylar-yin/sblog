@@ -48,6 +48,10 @@ int32_t UserActiveServlet::handle(sylar::http::HttpRequest::ptr request
         info->setUpdateTime(time(0));
 
         auto db = getDB();
+        if(!db) {
+            result->setResult(500, "get db error");
+            break;
+        }
         if(data::UserInfoDao::Update(info, db)) {
             result->setResult(500, "db update error");
             SYLAR_LOG_ERROR(g_logger) << "user_data: " << info->toJsonString()

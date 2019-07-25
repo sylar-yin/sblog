@@ -4,5 +4,6 @@ servers:
       timeout: 1000
       name: sylar/1.1
       accept_worker: accept
+      io_worker: io
       process_worker:  io
       type: http

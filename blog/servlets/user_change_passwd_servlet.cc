@@ -44,6 +44,10 @@ int32_t UserChangePasswdServlet::handle(sylar::http::HttpRequest::ptr request
         info->setPasswd(passwd);
         info->setUpdateTime(time(0));
         auto db = getDB();
+        if(!db) {
+            result->setResult(500, "get db error");
+            break;
+        }
         if(data::UserInfoDao::Update(info, db)) {
             result->setResult(500, "db update error");
             break;

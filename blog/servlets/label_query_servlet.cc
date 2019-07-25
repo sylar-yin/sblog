@@ -24,9 +24,28 @@ int32_t LabelQueryServlet::handle(sylar::http::HttpRequest::ptr request
                                   ,sylar::http::HttpSession::ptr session
                                   ,Result::ptr result) {
     do {
-        DEFINE_AND_CHECK_TYPE(result, int64_t, user_id, "user_id");
+        int64_t user_id = request->getParamAs<int64_t>("user_id");
+        std::string ids = request->getParam("ids");
+        if(user_id == 0 && ids.empty()) {
+            result->setResult(400, "param user_id and ids is null");
+            break;
+        }
+
         std::vector<data::LabelInfo::ptr> infos;
-        LabelMgr::GetInstance()->listByUserId(infos, user_id, true);
+        if(user_id) {
+            LabelMgr::GetInstance()->listByUserId(infos, user_id, true);
+        } else {
+            auto tmp = sylar::split(ids, ',');
+            for(auto& i : tmp) {
+                auto id = sylar::TypeUtil::Atoi(i);
+                if(id) {
+                    auto info = LabelMgr::GetInstance()->get(id);
+                    if(info) {
+                        infos.push_back(info);
+                    }
+                }
+            }
+        }
         result->setResult(200, "ok");
         for(auto& i : infos) {
             Json::Value v;

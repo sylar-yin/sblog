@@ -56,6 +56,10 @@ int32_t CommentCreateServlet::handle(sylar::http::HttpRequest::ptr request
         cinfo->setState(1);
         cinfo->setUpdateTime(time(0));
         auto db = getDB();
+        if(!db) {
+            result->setResult(500, "get db error");
+            break;
+        }
         if(data::CommentInfoDao::Insert(cinfo, db)) {
             result->setResult(500, "insert comment fail");
             break;

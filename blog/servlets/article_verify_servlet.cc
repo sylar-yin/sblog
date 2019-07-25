@@ -67,6 +67,10 @@ int32_t ArticleVerifyServlet::handle(sylar::http::HttpRequest::ptr request
         info->setUpdateTime(time(0));
 
         auto db = getDB();
+        if(!db) {
+            result->setResult(500, "get db error");
+            break;
+        }
         if(data::ArticleInfoDao::Update(info, db)) {
             result->setResult(500, "insert article fail");
             info->setState(1);

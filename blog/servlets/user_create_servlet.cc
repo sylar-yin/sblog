@@ -51,6 +51,10 @@ int32_t UserCreateServlet::handle(sylar::http::HttpRequest::ptr request
 
         auto db = getDB();
         if(!db) {
+            result->setResult(500, "get db error");
+            break;
+        }
+        if(!db) {
             result->setResult(500, "get db connection fail");
             break;
         }

@@ -150,7 +150,10 @@ bool BlogServlet::initLogin(sylar::http::HttpRequest::ptr request
             << "\t" << (!request->getQuery().empty() ? request->getQuery() : "-");
 
         uinfo->setLoginTime(time(0));
-        data::UserInfoDao::Update(uinfo, getDB());
+        auto db = getDB();
+        if(db) {
+            data::UserInfoDao::Update(uinfo, db);
+        }
         is_login = true;
     } while(0);
     data->setData(CookieKey::IS_AUTH, (int32_t)1);

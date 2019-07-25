@@ -47,9 +47,14 @@ int32_t UserLoginServlet::handle(sylar::http::HttpRequest::ptr request
             result->setResult(410, "invalid passwd");
             break;
         }
+        auto db = getDB();
+        if(!db) {
+            result->setResult(500, "get db error");
+            break;
+        }
         info->setLoginTime(time(0));
         uint64_t ts1 = sylar::GetCurrentUS();
-        data::UserInfoDao::Update(info, getDB());
+        data::UserInfoDao::Update(info, db);
         SYLAR_LOG_INFO(g_logger) << "update used: " << (sylar::GetCurrentUS() - ts1) / 1000.0 << " ms";
         result->setResult(200, "ok");
         int64_t token_time = time(0) + 3600 * 24;

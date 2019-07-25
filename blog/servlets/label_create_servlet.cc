@@ -43,6 +43,10 @@ int32_t LabelCreateServlet::handle(sylar::http::HttpRequest::ptr request
         info->setUpdateTime(time(0));
 
         auto db = getDB();
+        if(!db) {
+            result->setResult(500, "get db error");
+            break;
+        }
         if(data::LabelInfoDao::InsertOrUpdate(info, db)) {
             result->setResult(500, "insert or update label fail");
             break;

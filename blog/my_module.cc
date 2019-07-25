@@ -17,6 +17,7 @@
 #include "blog/servlets/category_query_servlet.h"
 #include "blog/servlets/comment_create_servlet.h"
 #include "blog/servlets/comment_delete_servlet.h"
+#include "blog/servlets/comment_detail_servlet.h"
 #include "blog/servlets/comment_verify_servlet.h"
 #include "blog/servlets/comment_verify_list_servlet.h"
 #include "blog/servlets/comment_query_servlet.h"
@@ -164,6 +165,7 @@ bool MyModule::onServerReady() {
 
         XX("/comment/create",       CommentCreateServlet);
         XX("/comment/delete",       CommentDeleteServlet);
+        XX("/comment/detail",       CommentDetailServlet);
         XX("/comment/verify",       CommentVerifyServlet);
         XX("/comment/verify_list",  CommentVerifyListServlet);
         XX("/comment/query",        CommentQueryServlet);

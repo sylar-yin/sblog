@@ -49,6 +49,10 @@ int32_t ArticleDeleteServlet::handle(sylar::http::HttpRequest::ptr request
         }
 
         auto db = getDB();
+        if(!db) {
+            result->setResult(500, "get db error");
+            break;
+        }
         auto trans = db->openTransaction();
         if(!trans) {
             result->setResult(500, "open transaction fail");

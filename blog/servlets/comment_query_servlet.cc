@@ -24,7 +24,7 @@ int32_t CommentQueryServlet::handle(sylar::http::HttpRequest::ptr request
                                   ,sylar::http::HttpSession::ptr session
                                   ,Result::ptr result) {
     do {
-        int64_t id = request->getParamAs<int64_t>("id");
+        DEFINE_AND_CHECK_TYPE(result, int64_t, id, "id");
         int64_t page_from = request->getParamAs<int64_t>("page_from");
         int64_t page_size = request->getParamAs<int64_t>("page_size", 20);
         std::vector<data::CommentInfo::ptr> infos;

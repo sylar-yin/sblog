@@ -46,6 +46,7 @@ set(LIB_SRC
         blog/servlets/article_create_servlet.cc
         blog/servlets/comment_create_servlet.cc
         blog/servlets/comment_delete_servlet.cc
+        blog/servlets/comment_detail_servlet.cc
         blog/servlets/comment_verify_servlet.cc
         blog/servlets/comment_verify_list_servlet.cc
         blog/servlets/comment_query_servlet.cc

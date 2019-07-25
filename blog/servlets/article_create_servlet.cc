@@ -46,6 +46,10 @@ int32_t ArticleCreateServlet::handle(sylar::http::HttpRequest::ptr request
         info->setUserId(uid);
         info->setUpdateTime(time(0));
         auto db = getDB();
+        if(!db) {
+            result->setResult(500, "get db error");
+            break;
+        }
         if(data::ArticleInfoDao::Insert(info, db)) {
             result->setResult(500, "insert article fail");
             break;

@@ -34,6 +34,10 @@ int32_t UserForgetPasswdServlet::handle(sylar::http::HttpRequest::ptr request
         auto v = sylar::random_string(16);
         info->setCode(v);
         auto db = getDB();
+        if(!db) {
+            result->setResult(500, "get db error");
+            break;
+        }
         //auto trans = db->openTransaction();
         if(data::UserInfoDao::Update(info, db)) {
             result->setResult(500, "db update error");

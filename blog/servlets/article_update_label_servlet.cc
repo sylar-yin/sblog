@@ -53,6 +53,10 @@ int32_t ArticleUpdateLabelServlet::handle(sylar::http::HttpRequest::ptr request
         time_t now = time(0);
 
         auto db = getDB();
+        if(!db) {
+            result->setResult(500, "get db error");
+            break;
+        }
         auto trans = db->openTransaction();
         if(!trans) {
             result->setResult(500, "open transaction fail");

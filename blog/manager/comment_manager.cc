@@ -25,7 +25,7 @@ bool CommentManager::loadAll() {
 
     for(auto& i : results) {
         datas[i->getId()] = i;
-        articles[i->getUserId()][i->getId()] = i;
+        articles[i->getArticleId()][i->getId()] = i;
         if(i->getState() == 1
                 && i->getIsDeleted() == 0) {
             verifys[i->getId()] = i;
@@ -42,7 +42,7 @@ bool CommentManager::loadAll() {
 void CommentManager::add(blog::data::CommentInfo::ptr info) {
     sylar::RWMutex::WriteLock lock(m_mutex);
     m_datas[info->getId()] = info;
-    m_articles[info->getUserId()][info->getId()] = info;
+    m_articles[info->getArticleId()][info->getId()] = info;
     if(info->getState() == 1
             && info->getIsDeleted() == 0) {
         m_verifys[info->getId()] = info;

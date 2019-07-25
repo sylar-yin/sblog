@@ -55,6 +55,11 @@ int32_t CategoryCreateServlet::handle(sylar::http::HttpRequest::ptr request
         info->setUpdateTime(time(0));
 
         auto db = getDB();
+        if(!db) {
+            result->setResult(500, "get db error");
+            break;
+        }
+
         if(data::CategoryInfoDao::InsertOrUpdate(info, db)) {
             result->setResult(500, "insert or update category fail");
             break;
