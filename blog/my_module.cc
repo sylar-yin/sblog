@@ -10,6 +10,7 @@
 #include "blog/servlets/article_publish_servlet.h"
 #include "blog/servlets/article_update_category_servlet.h"
 #include "blog/servlets/article_update_label_servlet.h"
+#include "blog/servlets/article_snappy_servlet.h"
 #include "blog/servlets/article_verify_list_servlet.h"
 #include "blog/servlets/article_verify_servlet.h"
 #include "blog/servlets/category_create_servlet.h"
@@ -154,6 +155,7 @@ bool MyModule::onServerReady() {
         XX("/article/delete", ArticleDeleteServlet);
         XX("/article/query",  ArticleQueryServlet);
         XX("/article/detail",  ArticleDetailServlet);
+        XX("/article/snappy",  ArticleSnappyServlet);
 
         XX("/article/update_category",  ArticleUpdateCategoryServlet);
         XX("/article/update_label",  ArticleUpdateLabelServlet);

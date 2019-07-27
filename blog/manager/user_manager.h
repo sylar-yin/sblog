@@ -10,6 +10,10 @@ namespace blog {
 
 class UserManager {
 public:
+    enum class RoleType {
+        NORMAL = 1,
+        ADMIN = 0xFF
+    };
     bool loadAll();
     void add(blog::data::UserInfo::ptr info);
     blog::data::UserInfo::ptr get(int64_t id);

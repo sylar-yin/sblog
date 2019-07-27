@@ -49,6 +49,7 @@ BlogServlet::BlogServlet(const std::string& name)
 int32_t BlogServlet::handle(sylar::http::HttpRequest::ptr request
                            ,sylar::http::HttpResponse::ptr response
                            ,sylar::http::HttpSession::ptr session) {
+    uint64_t ts = sylar::GetCurrentUS();
     Result::ptr result = std::make_shared<Result>();
     response->setHeader("Access-Control-Allow-Origin", "*");
     response->setHeader("Access-Control-Allow-Credentials", "true");
@@ -57,7 +58,9 @@ int32_t BlogServlet::handle(sylar::http::HttpRequest::ptr request
     } else {
         response->setBody(result->toJsonString());
     }
+    uint64_t used = sylar::GetCurrentUS() - ts;
     handlePost(request, response, session, result);
+    response->setHeader("used", std::to_string((used * 1.0 / 1000)) + "ms");
     return 0;
 }
 

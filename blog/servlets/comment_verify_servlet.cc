@@ -1,6 +1,7 @@
 #include "comment_verify_servlet.h"
 #include "sylar/log.h"
 #include "blog/manager/comment_manager.h"
+#include "blog/manager/user_manager.h"
 #include "sylar/util.h"
 #include "blog/my_module.h"
 #include "sylar/email/smtp.h"
@@ -36,6 +37,17 @@ int32_t CommentVerifyServlet::handle(sylar::http::HttpRequest::ptr request
         int64_t uid = getUserId(request);
         if(!uid) {
             result->setResult(500, "not login");
+            break;
+        }
+
+        data::UserInfo::ptr uinfo = UserMgr::GetInstance()->get(uid);
+        if(!uinfo) {
+            result->setResult(401, "invalid user");
+            break;
+        }
+
+        if(uinfo->getRole() != (int)UserManager::RoleType::ADMIN) {
+            result->setResult(401, "permission denied");
             break;
         }
 

@@ -24,6 +24,8 @@ sylar::IDB::ptr GetDB();
         break; \
     }
 
+std::string get_max_length_string(const std::string& str, size_t len);
+
 }
 
 

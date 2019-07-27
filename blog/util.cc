@@ -18,4 +18,10 @@ sylar::IDB::ptr GetDB() {
     return sylar::SQLite3Mgr::GetInstance()->get("blog");
 }
 
+std::string get_max_length_string(const std::string& str, size_t len) {
+    auto wstr = sylar::StringUtil::StringToWString(str);
+    wstr.resize(len);
+    return sylar::StringUtil::WStringToString(wstr);
+}
+
 }

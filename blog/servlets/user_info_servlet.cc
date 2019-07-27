@@ -30,9 +30,11 @@ int32_t UserInfoServlet::handle(sylar::http::HttpRequest::ptr request
             break;
         }
         result->setResult(200, "ok");
+        result->set("id", info->getId());
         result->set("account", info->getAccount());
         result->set("email", info->getEmail());
         result->set("name", info->getName());
+        result->set("role", info->getRole());
         result->set("login_time", info->getLoginTime());
     } while(false);
     response->setBody(result->toJsonString());
