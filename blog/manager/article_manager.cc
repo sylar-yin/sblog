@@ -143,6 +143,19 @@ int64_t ArticleManager::listVerifyPages(std::vector<data::ArticleInfo::ptr>& inf
     return total;
 }
 
+std::string ArticleManager::statusString() {
+    std::stringstream ss;
+    sylar::RWMutex::ReadLock lock(m_mutex);
+    ss << "ArticleManager total=" << m_datas.size()
+       << " verify=" << m_verifys.size()
+       << std::endl;
+    for(auto& i : m_users) {
+        ss << "    user(" << i.first << ") size=" << i.second.size() << std::endl;
+    }
+    lock.unlock();
+    return ss.str();
+}
+
 #undef XX
 
 }

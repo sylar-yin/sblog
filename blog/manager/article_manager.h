@@ -25,6 +25,7 @@ public:
                             ,int32_t offset, int32_t size);
 
 
+    std::string statusString();
 private:
     sylar::RWMutex m_mutex;
     std::map<int64_t, blog::data::ArticleInfo::ptr> m_datas;

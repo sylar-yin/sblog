@@ -116,6 +116,17 @@ int64_t CommentManager::listVerifyPages(std::vector<data::CommentInfo::ptr>& inf
     return total;
 }
 
+std::string CommentManager::statusString() {
+    std::stringstream ss;
+    sylar::RWMutex::ReadLock lock(m_mutex);
+    ss << "CommentManager total=" << m_datas.size()
+       << " articles=" << m_articles.size()
+       << " verifys=" << m_verifys.size()
+       << std::endl;
+    lock.unlock();
+    return ss.str();
+}
+
 #undef XX
 
 }

@@ -73,6 +73,15 @@ bool ArticleLabelRelManager::listByArticleId(std::vector<data::ArticleLabelRelIn
     return true;
 }
 
+std::string ArticleLabelRelManager::statusString() {
+    std::stringstream ss;
+    sylar::RWMutex::ReadLock lock(m_mutex);
+    ss << "ArticleLabelRelManager total=" << m_datas.size()
+       << " articles=" << m_articles.size() << std::endl;
+    lock.unlock();
+    return ss.str();
+}
+
 #undef XX
 
 }

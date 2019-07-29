@@ -11,6 +11,7 @@ public:
     bool onUnload() override;
     bool onServerReady() override;
     bool onServerUp() override;
+    std::string statusString() override;
 };
 
 }

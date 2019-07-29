@@ -22,6 +22,8 @@ public:
     blog::data::UserInfo::ptr getByName(const std::string& v);
 
     static std::string GetToken(data::UserInfo::ptr info, int64_t ts);
+
+    std::string statusString();
 private:
     sylar::RWMutex m_mutex;
     std::unordered_map<int64_t, blog::data::UserInfo::ptr> m_datas;

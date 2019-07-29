@@ -80,4 +80,13 @@ std::string UserManager::GetToken(data::UserInfo::ptr info, int64_t ts) {
     return sylar::md5(ss.str());
 }
 
+std::string UserManager::statusString() {
+    std::stringstream ss;
+    sylar::RWMutex::ReadLock lock(m_mutex);
+    ss << "UserManager total=" << m_datas.size()
+       << std::endl;
+    lock.unlock();
+    return ss.str();
+}
+
 }

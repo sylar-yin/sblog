@@ -180,6 +180,19 @@ bool MyModule::onServerUp() {
     return true;
 }
 
+std::string MyModule::statusString() {
+    std::stringstream ss;
+    ss << sylar::Module::statusString() << std::endl;
+    ss << UserMgr::GetInstance()->statusString() << std::endl;
+    ss << ArticleMgr::GetInstance()->statusString() << std::endl;
+    ss << CategoryMgr::GetInstance()->statusString() << std::endl;
+    ss << LabelMgr::GetInstance()->statusString() << std::endl;
+    ss << CommentMgr::GetInstance()->statusString() << std::endl;
+    ss << ArticleLabelRelMgr::GetInstance()->statusString() << std::endl;
+    ss << ArticleCategoryRelMgr::GetInstance()->statusString() << std::endl;
+    return ss.str();
+}
+
 }
 
 extern "C" {

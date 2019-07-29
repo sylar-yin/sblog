@@ -21,6 +21,8 @@ public:
 
     int64_t listVerifyPages(std::vector<data::CommentInfo::ptr>& infos
                             ,int32_t offset, int32_t size);
+
+    std::string statusString();
 private:
     sylar::RWMutex m_mutex;
     std::unordered_map<int64_t, blog::data::CommentInfo::ptr> m_datas;

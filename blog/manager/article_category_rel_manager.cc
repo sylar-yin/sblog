@@ -77,6 +77,16 @@ blog::data::ArticleCategoryRelInfo::ptr ArticleCategoryRelManager::getByArticleI
     return iit->second;
 }
 
+std::string ArticleCategoryRelManager::statusString() {
+    std::stringstream ss;
+    sylar::RWMutex::ReadLock lock(m_mutex);
+    ss << "ArticleCategoryRelManager total=" << m_datas.size()
+       << " articles=" << m_articles.size()
+       << std::endl;
+    lock.unlock();
+    return ss.str();
+}
+
 #undef XX
 
 }

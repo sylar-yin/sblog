@@ -72,7 +72,8 @@ protected:
     sylar::http::SessionData::ptr getSessionData(sylar::http::HttpRequest::ptr request
                                                  ,sylar::http::HttpResponse::ptr response);
     bool initLogin(sylar::http::HttpRequest::ptr request
-                   ,sylar::http::HttpResponse::ptr response);
+                   ,sylar::http::HttpResponse::ptr response
+                   ,sylar::http::HttpSession::ptr session);
 protected:
     sylar::IDB::ptr getDB();
 };

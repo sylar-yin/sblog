@@ -78,6 +78,16 @@ bool LabelManager::listByUserId(std::vector<data::LabelInfo::ptr>& infos, int64_
     return true;
 }
 
+std::string LabelManager::statusString() {
+    std::stringstream ss;
+    sylar::RWMutex::ReadLock lock(m_mutex);
+    ss << "LabelManager total=" << m_datas.size()
+       << " users=" << m_users.size()
+       << std::endl;
+    lock.unlock();
+    return ss.str();
+}
+
 #undef XX
 
 }

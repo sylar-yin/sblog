@@ -17,6 +17,8 @@ public:
     bool listByUserId(std::vector<blog::data::CategoryInfo::ptr>& infos, int64_t id, bool valid);
     blog::data::CategoryInfo::ptr getByUserIdName(int64_t id, const std::string& name);
     bool exists(int64_t id, const std::string& name);
+
+    std::string statusString();
 private:
     sylar::RWMutex m_mutex;
     std::unordered_map<int64_t, blog::data::CategoryInfo::ptr> m_datas;

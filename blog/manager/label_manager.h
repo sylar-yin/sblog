@@ -16,6 +16,8 @@ public:
     blog::data::LabelInfo::ptr get(int64_t id);
     blog::data::LabelInfo::ptr getByUserIdName(int64_t id, const std::string& name);
     bool listByUserId(std::vector<data::LabelInfo::ptr>& infos, int64_t id, bool valid);
+
+    std::string statusString();
 private:
     sylar::RWMutex m_mutex;
     std::unordered_map<int64_t, blog::data::LabelInfo::ptr> m_datas;

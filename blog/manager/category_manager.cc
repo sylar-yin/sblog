@@ -88,6 +88,15 @@ blog::data::CategoryInfo::ptr CategoryManager::getByUserIdName(int64_t id, const
     return iit != it->second.end() ? iit->second : nullptr;
 }
 
+std::string CategoryManager::statusString() {
+    std::stringstream ss;
+    sylar::RWMutex::ReadLock lock(m_mutex);
+    ss << "CategoryManager total=" << m_datas.size()
+       << " users=" << m_users.size() << std::endl;
+    lock.unlock();
+    return ss.str();
+}
+
 #undef XX
 
 }

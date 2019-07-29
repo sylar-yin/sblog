@@ -16,6 +16,8 @@ public:
     blog::data::ArticleLabelRelInfo::ptr get(int64_t id);
     blog::data::ArticleLabelRelInfo::ptr getByArticleIdLabelId(int64_t article_id, int64_t label_id);
     bool listByArticleId(std::vector<data::ArticleLabelRelInfo::ptr>& infos, int64_t article_id, bool valid);
+
+    std::string statusString();
 private:
     sylar::RWMutex m_mutex;
     std::unordered_map<int64_t, blog::data::ArticleLabelRelInfo::ptr> m_datas;
