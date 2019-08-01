@@ -49,6 +49,8 @@ int32_t LabelCreateServlet::handle(sylar::http::HttpRequest::ptr request
         }
         if(data::LabelInfoDao::InsertOrUpdate(info, db)) {
             result->setResult(500, "insert or update label fail");
+            SYLAR_LOG_ERROR(g_logger) << "db error errno=" << db->getErrno()
+                << " errstr=" << db->getErrStr();
             break;
         }
 

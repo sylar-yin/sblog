@@ -68,6 +68,8 @@ int32_t ArticleUpdateServlet::handle(sylar::http::HttpRequest::ptr request
         if(type) {
             info->setType(type);
         }
+        info->setState((int)State::VERIFYING);
+        ArticleMgr::GetInstance()->addVerify(info);
         info->setUpdateTime(time(0));
         auto db = getDB();
         if(!db) {
@@ -76,6 +78,8 @@ int32_t ArticleUpdateServlet::handle(sylar::http::HttpRequest::ptr request
         }
         if(data::ArticleInfoDao::Update(info, db)) {
             result->setResult(500, "update article fail");
+            SYLAR_LOG_ERROR(g_logger) << "db error errno=" << db->getErrno()
+                << " errstr=" << db->getErrStr();
             break;
         }
         result->setResult(200, "ok");

@@ -68,7 +68,7 @@ int32_t UserCreateServlet::handle(sylar::http::HttpRequest::ptr request
         info->setAccount(account);
         info->setEmail(email);
         info->setPasswd(passwd);
-        info->setState(1);
+        info->setState((int)State::VERIFYING);
         info->setName(account);
         info->setCode(v);
 

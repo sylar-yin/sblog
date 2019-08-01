@@ -10,6 +10,13 @@
 
 namespace blog {
 
+enum class State {
+    VERIFYING = 1,
+    PUBLISH   = 2,
+    NOT_PASS  = 3,
+    UNPUBLISH = 4
+};
+
 struct Result {
     typedef std::shared_ptr<Result> ptr;
     Result(int32_t c = 200, const std::string& m = "ok");

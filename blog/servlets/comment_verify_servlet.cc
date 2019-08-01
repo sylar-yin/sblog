@@ -28,8 +28,8 @@ int32_t CommentVerifyServlet::handle(sylar::http::HttpRequest::ptr request
         DEFINE_AND_CHECK_TYPE(result, int64_t, id, "id");
         DEFINE_AND_CHECK_TYPE(result, int64_t, state, "state");
 
-        if(state != 2 
-                && state != 3) {
+        if(state != (int64_t)State::PUBLISH
+                && state != (int64_t)State::NOT_PASS) {
             result->setResult(401, "invalid state");
             break;
         }
@@ -78,7 +78,10 @@ int32_t CommentVerifyServlet::handle(sylar::http::HttpRequest::ptr request
 
         if(data::CommentInfoDao::Update(info, db)) {
             result->setResult(500, "insert comment fail");
-            info->setState(1);
+            info->setState((int)State::VERIFYING);
+
+            SYLAR_LOG_ERROR(g_logger) << "db error errno=" << db->getErrno()
+                << " errstr=" << db->getErrStr();
             break;
         }
         result->setResult(200, "ok");

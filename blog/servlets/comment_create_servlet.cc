@@ -53,7 +53,7 @@ int32_t CommentCreateServlet::handle(sylar::http::HttpRequest::ptr request
         cinfo->setArticleId(id);
         cinfo->setUserId(uid);
         cinfo->setParentId(comment_id);
-        cinfo->setState(1);
+        cinfo->setState((int)State::VERIFYING);
         cinfo->setUpdateTime(time(0));
         auto db = getDB();
         if(!db) {
@@ -62,6 +62,9 @@ int32_t CommentCreateServlet::handle(sylar::http::HttpRequest::ptr request
         }
         if(data::CommentInfoDao::Insert(cinfo, db)) {
             result->setResult(500, "insert comment fail");
+
+            SYLAR_LOG_ERROR(g_logger) << "db error errno=" << db->getErrno()
+                << " errstr=" << db->getErrStr();
             break;
         }
         CommentMgr::GetInstance()->add(cinfo);

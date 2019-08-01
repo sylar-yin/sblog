@@ -47,7 +47,7 @@ int32_t ArticlePublishServlet::handle(sylar::http::HttpRequest::ptr request
             result->setResult(401, "invalid state");
             break;
         }
-        info->setState(1);
+        info->setState((int)State::VERIFYING);
         info->setPublishTime(publish_time);
         info->setUpdateTime(time(0));
         auto db = getDB();
@@ -57,6 +57,9 @@ int32_t ArticlePublishServlet::handle(sylar::http::HttpRequest::ptr request
         }
         if(data::ArticleInfoDao::Update(info, db)) {
             result->setResult(500, "update article fail");
+
+            SYLAR_LOG_ERROR(g_logger) << "db error errno=" << db->getErrno()
+                << " errstr=" << db->getErrStr();
             break;
         }
         ArticleMgr::GetInstance()->add(info);

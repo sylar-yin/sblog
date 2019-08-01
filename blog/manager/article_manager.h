@@ -4,6 +4,7 @@
 #include "blog/data/article_info.h"
 #include "sylar/singleton.h"
 #include "sylar/mutex.h"
+#include "sylar/iomanager.h"
 #include <map>
 #include <unordered_map>
 
@@ -16,7 +17,7 @@ public:
     blog::data::ArticleInfo::ptr get(int64_t id);
     bool listByUserId(std::vector<data::ArticleInfo::ptr>& infos, int64_t id, bool valid);
     int64_t listByUserIdPages(std::vector<data::ArticleInfo::ptr>& infos, int64_t id
-                              ,int32_t offset, int32_t size, bool valid);
+                              ,int32_t offset, int32_t size, bool valid, int state);
 
     void delVerify(int64_t id);
     void addVerify(data::ArticleInfo::ptr info);
@@ -26,11 +27,16 @@ public:
 
 
     std::string statusString();
+    void start();
+    void stop();
+private:
+    void onTimer();
 private:
     sylar::RWMutex m_mutex;
     std::map<int64_t, blog::data::ArticleInfo::ptr> m_datas;
     std::unordered_map<int64_t, std::map<int64_t, blog::data::ArticleInfo::ptr> > m_users;
     std::map<int64_t, blog::data::ArticleInfo::ptr> m_verifys;
+    sylar::Timer::ptr m_timer;
 };
 
 typedef sylar::Singleton<ArticleManager> ArticleMgr;

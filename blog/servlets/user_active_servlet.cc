@@ -44,7 +44,7 @@ int32_t UserActiveServlet::handle(sylar::http::HttpRequest::ptr request
         }
 
         info->setCode("");
-        info->setState(2);
+        info->setState((int)State::PUBLISH);
         info->setUpdateTime(time(0));
 
         auto db = getDB();

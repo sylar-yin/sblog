@@ -10,6 +10,7 @@
 #include "blog/servlets/article_publish_servlet.h"
 #include "blog/servlets/article_update_category_servlet.h"
 #include "blog/servlets/article_update_label_servlet.h"
+#include "blog/servlets/article_update_servlet.h"
 #include "blog/servlets/article_snappy_servlet.h"
 #include "blog/servlets/article_verify_list_servlet.h"
 #include "blog/servlets/article_verify_servlet.h"
@@ -160,6 +161,7 @@ bool MyModule::onServerReady() {
         XX("/article/update_category",  ArticleUpdateCategoryServlet);
         XX("/article/update_label",  ArticleUpdateLabelServlet);
         XX("/article/publish",  ArticlePublishServlet);
+        XX("/article/update",  ArticleUpdateServlet);
 
         XX("/article/verify",  ArticleVerifyServlet);
         XX("/article/verify_list",  ArticleVerifyListServlet);
@@ -172,6 +174,8 @@ bool MyModule::onServerReady() {
         XX("/comment/verify_list",  CommentVerifyListServlet);
         XX("/comment/query",        CommentQueryServlet);
     }
+
+    ArticleMgr::GetInstance()->start();
     return true;
 }
 

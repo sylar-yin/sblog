@@ -2,6 +2,7 @@
 #include "sylar/log.h"
 #include "sylar/util.h"
 #include "blog/util.h"
+#include "blog/struct.h"
 
 namespace blog {
 
@@ -82,7 +83,7 @@ bool ArticleManager::listByUserId(std::vector<data::ArticleInfo::ptr>& infos, in
 }
 
 int64_t ArticleManager::listByUserIdPages(std::vector<data::ArticleInfo::ptr>& infos, int64_t id
-                                          ,int32_t offset, int32_t size, bool valid) {
+                                          ,int32_t offset, int32_t size, bool valid, int state) {
     sylar::RWMutex::ReadLock lock(m_mutex);
     if(id == 0) {
         if(offset >= (int32_t)m_datas.size()) {
@@ -92,7 +93,9 @@ int64_t ArticleManager::listByUserIdPages(std::vector<data::ArticleInfo::ptr>& i
         std::advance(it, offset);
         for(; (int32_t)infos.size() < size && it != m_datas.rend(); ++it) {
             if(!valid || !it->second->getIsDeleted()) {
-                infos.push_back(it->second);
+                if(!state || it->second->getState() == state) {
+                    infos.push_back(it->second);
+                }
             }
         }
         return m_datas.size();
@@ -108,7 +111,9 @@ int64_t ArticleManager::listByUserIdPages(std::vector<data::ArticleInfo::ptr>& i
         std::advance(it, offset);
         for(; (int32_t)infos.size() < size && it != uit->second.rend(); ++it) {
             if(!valid || !it->second->getIsDeleted()) {
-                infos.push_back(it->second);
+                if(!state || it->second->getState() == state) {
+                    infos.push_back(it->second);
+                }
             }
         }
         return uit->second.size();
@@ -154,6 +159,58 @@ std::string ArticleManager::statusString() {
     }
     lock.unlock();
     return ss.str();
+}
+
+void ArticleManager::start() {
+    sylar::RWMutex::WriteLock lock(m_mutex);
+    if(m_timer) {
+        return;
+    }
+    m_timer = sylar::IOManager::GetThis()->addTimer(60 * 1000,
+                std::bind(&ArticleManager::onTimer, this), true);
+}
+
+void ArticleManager::stop() {
+    sylar::RWMutex::WriteLock lock(m_mutex);
+    if(!m_timer) {
+        return;
+    }
+    m_timer->cancel();
+    m_timer = nullptr;
+}
+
+void ArticleManager::onTimer() {
+    time_t now = time(0);
+    std::vector<data::ArticleInfo::ptr> infos;
+    sylar::RWMutex::ReadLock lock(m_mutex);
+    for(auto& i : m_datas) {
+        if(i.second->getState() != (int)State::UNPUBLISH) {
+            continue;
+        }
+
+        if(i.second->getPublishTime() < now) {
+            i.second->setState((int)State::PUBLISH);
+            i.second->setUpdateTime(now);
+            infos.push_back(i.second);
+        }
+    }
+    lock.unlock();
+
+    if(infos.empty()) {
+        return;
+    }
+    auto db = GetDB();
+    if(!db) {
+        SYLAR_LOG_ERROR(g_logger) << "getDB error";
+        return;
+    }
+    for(auto& i : infos) {
+        if(data::ArticleInfoDao::Update(i, db)) {
+            SYLAR_LOG_ERROR(g_logger) << "Update error errno="
+                << db->getErrno() << " errstr=" << db->getErrStr()
+                << " data=" << i->toJsonString();
+        }
+    }
 }
 
 #undef XX

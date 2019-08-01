@@ -62,6 +62,8 @@ int32_t CategoryCreateServlet::handle(sylar::http::HttpRequest::ptr request
 
         if(data::CategoryInfoDao::InsertOrUpdate(info, db)) {
             result->setResult(500, "insert or update category fail");
+            SYLAR_LOG_ERROR(g_logger) << "db error errno=" << db->getErrno()
+                << " errstr=" << db->getErrStr();
             break;
         }
 

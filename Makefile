@@ -2,7 +2,7 @@
 
 xx:
 	if [ -d "build" ]; then \
-		cd build && make; \
+		cd build && make -j4; \
 	else \
 		mkdir build; \
 		cd build && cmake ..; \

@@ -52,6 +52,8 @@ int32_t UserUpdateServlet::handle(sylar::http::HttpRequest::ptr request
         }
         if(data::UserInfoDao::Update(info, db)) {
             result->setResult(500, "update user fail");
+            SYLAR_LOG_ERROR(g_logger) << "db error errno=" << db->getErrno()
+                << " errstr=" << db->getErrStr();
             //TODO log
             break;
         }

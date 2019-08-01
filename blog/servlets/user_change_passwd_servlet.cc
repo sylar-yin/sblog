@@ -50,6 +50,9 @@ int32_t UserChangePasswdServlet::handle(sylar::http::HttpRequest::ptr request
         }
         if(data::UserInfoDao::Update(info, db)) {
             result->setResult(500, "db update error");
+
+            SYLAR_LOG_ERROR(g_logger) << "db error errno=" << db->getErrno()
+                << " errstr=" << db->getErrStr();
             break;
         }
         result->setResult(200, "ok");

@@ -63,6 +63,8 @@ int32_t CommentDeleteServlet::handle(sylar::http::HttpRequest::ptr request
             i->setIsDeleted(1);
             i->setUpdateTime(now);
             data::CommentInfoDao::Update(i, db);
+            SYLAR_LOG_ERROR(g_logger) << "db error errno=" << db->getErrno()
+                << " errstr=" << db->getErrStr();
         }
         if(!trans->commit()) {
             SYLAR_LOG_ERROR(g_logger) << "commit fail";

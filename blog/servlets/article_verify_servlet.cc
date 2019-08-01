@@ -67,13 +67,13 @@ int32_t ArticleVerifyServlet::handle(sylar::http::HttpRequest::ptr request
             break;
         }
 
-        if(state == 3) {
+        if(state == (int)State::NOT_PASS) {
             info->setState(state);
-        } else if(state == 2) {
+        } else if(state == (int)State::PUBLISH) {
             if(info->getPublishTime() <= time(0)) {
-                info->setState(2);
+                info->setState((int)State::PUBLISH);
             } else {
-                info->setState(4);
+                info->setState((int)State::UNPUBLISH);
             }
         }
         info->setUpdateTime(time(0));
@@ -85,7 +85,10 @@ int32_t ArticleVerifyServlet::handle(sylar::http::HttpRequest::ptr request
         }
         if(data::ArticleInfoDao::Update(info, db)) {
             result->setResult(500, "insert article fail");
-            info->setState(1);
+            info->setState((int)State::VERIFYING);
+
+            SYLAR_LOG_ERROR(g_logger) << "db error errno=" << db->getErrno()
+                << " errstr=" << db->getErrStr();
             break;
         }
         result->setResult(200, "ok");

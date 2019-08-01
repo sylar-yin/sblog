@@ -52,6 +52,8 @@ int32_t ArticleCreateServlet::handle(sylar::http::HttpRequest::ptr request
         }
         if(data::ArticleInfoDao::Insert(info, db)) {
             result->setResult(500, "insert article fail");
+            SYLAR_LOG_ERROR(g_logger) << "db error errno=" << db->getErrno()
+                << " errstr=" << db->getErrStr();
             break;
         }
         ArticleMgr::GetInstance()->add(info);
