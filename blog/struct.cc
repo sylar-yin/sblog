@@ -12,6 +12,8 @@ const std::string CookieKey::USER_ID = "S_UID";
 const std::string CookieKey::TOKEN = "S_TOKEN";
 const std::string CookieKey::TOKEN_TIME = "S_TOKEN_TIME";
 const std::string CookieKey::IS_AUTH= "IS_AUTH";
+const std::string CookieKey::COMMENT_LAST_TIME = "COMMENT_LAST_TIME";
+const std::string CookieKey::ARTICLE_LAST_TIME = "ARTICLE_LAST_TIME";
 
 Result::Result(int32_t c, const std::string& m)
     :code(c)

@@ -15,6 +15,8 @@ namespace blog {
 namespace servlet {
 
 static sylar::Logger::ptr g_logger = SYLAR_LOG_ROOT();
+static sylar::ConfigVar<int64_t>::ptr g_comment_interval_time =
+    sylar::Config::Lookup("comment.interval_time", (int64_t)60, "comment interval time second");
 
 CommentCreateServlet::CommentCreateServlet()
     :BlogLoginedServlet("CommentCreate") {
@@ -37,6 +39,18 @@ int32_t CommentCreateServlet::handle(sylar::http::HttpRequest::ptr request
         data::ArticleInfo::ptr info = ArticleMgr::GetInstance()->get(id);
         if(!info) {
             result->setResult(401, "invalid id");
+            break;
+        }
+        auto data = getSessionData(request, response);
+        if(!data) {
+            result->setResult(502, "not login");
+            break;
+        }
+
+        int64_t now = time(0);
+        int64_t comment_time = data->getData<int64_t>(CookieKey::COMMENT_LAST_TIME);
+        if((now - comment_time) < g_comment_interval_time->getValue()) {
+            result->setResult(502, "comment too often");
             break;
         }
         //TODO check article state
@@ -70,6 +84,8 @@ int32_t CommentCreateServlet::handle(sylar::http::HttpRequest::ptr request
         CommentMgr::GetInstance()->add(cinfo);
         result->setResult(200, "ok");
         result->set("id", cinfo->getId());
+
+        data->setData<int64_t>(CookieKey::COMMENT_LAST_TIME, now);
     } while(false);
     
     response->setBody(result->toJsonString());

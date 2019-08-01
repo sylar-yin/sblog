@@ -14,6 +14,8 @@ namespace blog {
 namespace servlet {
 
 static sylar::Logger::ptr g_logger = SYLAR_LOG_ROOT();
+static sylar::ConfigVar<int64_t>::ptr g_article_interval_time =
+    sylar::Config::Lookup("article.interval_time", (int64_t)60, "article interval time second");
 
 ArticleCreateServlet::ArticleCreateServlet()
     :BlogLoginedServlet("ArticleCreate") {
@@ -39,6 +41,20 @@ int32_t ArticleCreateServlet::handle(sylar::http::HttpRequest::ptr request
             result->setResult(500, "not login");
             break;
         }
+
+        auto data = getSessionData(request, response);
+        if(!data) {
+            result->setResult(502, "not login");
+            break;
+        }
+
+        int64_t now = time(0);
+        int64_t comment_time = data->getData<int64_t>(CookieKey::ARTICLE_LAST_TIME);
+        if((now - comment_time) < g_article_interval_time->getValue()) {
+            result->setResult(502, "article too often");
+            break;
+        }
+
         data::ArticleInfo::ptr info(new data::ArticleInfo);
         info->setTitle(title);
         info->setContent(content);
@@ -59,6 +75,7 @@ int32_t ArticleCreateServlet::handle(sylar::http::HttpRequest::ptr request
         ArticleMgr::GetInstance()->add(info);
         result->setResult(200, "ok");
         result->set("id", info->getId());
+        data->setData<int64_t>(CookieKey::ARTICLE_LAST_TIME, now);
     } while(false);
     
     response->setBody(result->toJsonString());

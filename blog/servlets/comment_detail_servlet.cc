@@ -41,6 +41,7 @@ int32_t CommentDetailServlet::handle(sylar::http::HttpRequest::ptr request
             v["id"] = info->getId();
             v["content"] = info->getContent();
             v["user_id"] = info->getUserId();
+            v["time"] = info->getCreateTime();
             if(info->getParentId()) {
                 v["parent_id"] = info->getParentId();
             }
