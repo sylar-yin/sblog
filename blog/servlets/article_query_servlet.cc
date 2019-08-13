@@ -25,7 +25,11 @@ int32_t ArticleQueryServlet::handle(sylar::http::HttpRequest::ptr request
                                   ,Result::ptr result) {
     do {
         int64_t user_id = request->getParamAs<int64_t>("user_id");
-        int64_t state = request->getParamAs<int64_t>("state", (int64_t)State::PUBLISH);
+        //int64_t state = (int64_t)State::PUBLISH;
+        //if(request->hasParam("state")) {
+        int64_t state = request->getParamAs<int64_t>("state");
+        //int64_t state = request->getParamAs<int64_t>("state", (int64_t)State::PUBLISH);
+        //}
         int64_t page_from = request->getParamAs<int64_t>("page_from");
         int64_t page_size = request->getParamAs<int64_t>("page_size", 20);
         std::vector<data::ArticleInfo::ptr> infos;

@@ -86,6 +86,7 @@ int32_t CommentCreateServlet::handle(sylar::http::HttpRequest::ptr request
         result->set("id", cinfo->getId());
 
         data->setData<int64_t>(CookieKey::COMMENT_LAST_TIME, now);
+        SendWX("blog", "[" + std::to_string(uid) + "]发布评论[" + content + "], 需要审核");
     } while(false);
     
     response->setBody(result->toJsonString());

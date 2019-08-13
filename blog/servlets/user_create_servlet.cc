@@ -95,6 +95,7 @@ int32_t UserCreateServlet::handle(sylar::http::HttpRequest::ptr request
         auto r = client->send(mail, 5000);
         if(r->result != 0) {
             result->setResult(501, std::to_string(r->result) + " " + r->msg);
+            SendWX("blog", "邮件发送失败: " + std::to_string(r->result) + " " + r->msg + " email:" + email);
             break;
         }
 

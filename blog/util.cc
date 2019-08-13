@@ -24,4 +24,12 @@ std::string get_max_length_string(const std::string& str, size_t len) {
     return sylar::StringUtil::WStringToString(wstr);
 }
 
+void SendWX(const std::string& group, const std::string& msg) {
+    sylar::IOManager::GetThis()->schedule([group, msg](){
+        std::string url = "http://127.0.0.1:8072/send_wx?group=" + group
+            + "&msg=" + sylar::StringUtil::UrlEncode(msg);
+        sylar::http::HttpConnection::DoGet(url, 5000);
+    });
+}
+
 }

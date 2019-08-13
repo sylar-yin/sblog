@@ -49,8 +49,8 @@ int32_t ArticleCreateServlet::handle(sylar::http::HttpRequest::ptr request
         }
 
         int64_t now = time(0);
-        int64_t comment_time = data->getData<int64_t>(CookieKey::ARTICLE_LAST_TIME);
-        if((now - comment_time) < g_article_interval_time->getValue()) {
+        int64_t article_time = data->getData<int64_t>(CookieKey::ARTICLE_LAST_TIME);
+        if((now - article_time) < g_article_interval_time->getValue()) {
             result->setResult(502, "article too often");
             break;
         }
@@ -76,6 +76,7 @@ int32_t ArticleCreateServlet::handle(sylar::http::HttpRequest::ptr request
         result->setResult(200, "ok");
         result->set("id", info->getId());
         data->setData<int64_t>(CookieKey::ARTICLE_LAST_TIME, now);
+        SendWX("blog", "[" + std::to_string(uid) + "]创建文章成功[" + title + "]");
     } while(false);
     
     response->setBody(result->toJsonString());

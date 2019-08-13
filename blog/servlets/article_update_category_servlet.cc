@@ -82,9 +82,10 @@ int32_t ArticleUpdateCategoryServlet::handle(sylar::http::HttpRequest::ptr reque
                     acinfo->setIsDeleted(0);
                     acinfo->setUpdateTime(now);
                     update_add_infos.push_back(acinfo);
-                    data::ArticleCategoryRelInfoDao::Update(acinfo, db);
-                    SYLAR_LOG_ERROR(g_logger) << "db error errno=" << db->getErrno()
-                        << " errstr=" << db->getErrStr();
+                    if(data::ArticleCategoryRelInfoDao::Update(acinfo, db)) {
+                        SYLAR_LOG_ERROR(g_logger) << "db error errno=" << db->getErrno()
+                            << " errstr=" << db->getErrStr();
+                    }
                 }
             } else {
                 acinfo.reset(new data::ArticleCategoryRelInfo);
@@ -92,9 +93,10 @@ int32_t ArticleUpdateCategoryServlet::handle(sylar::http::HttpRequest::ptr reque
                 acinfo->setCategoryId(cid);
                 acinfo->setUpdateTime(now);
                 new_infos.push_back(acinfo);
-                data::ArticleCategoryRelInfoDao::Insert(acinfo, db);
-                SYLAR_LOG_ERROR(g_logger) << "db error errno=" << db->getErrno()
-                    << " errstr=" << db->getErrStr();
+                if(data::ArticleCategoryRelInfoDao::Insert(acinfo, db)) {
+                    SYLAR_LOG_ERROR(g_logger) << "db error errno=" << db->getErrno()
+                        << " errstr=" << db->getErrStr();
+                }
             }
         }
         tmps.clear();
@@ -117,9 +119,10 @@ int32_t ArticleUpdateCategoryServlet::handle(sylar::http::HttpRequest::ptr reque
                     acinfo->setUpdateTime(now);
                     new_infos.push_back(acinfo);
                     update_del_infos.push_back(acinfo);
-                    data::ArticleCategoryRelInfoDao::Update(acinfo, db);
-                    SYLAR_LOG_ERROR(g_logger) << "db error errno=" << db->getErrno()
-                        << " errstr=" << db->getErrStr();
+                    if(data::ArticleCategoryRelInfoDao::Update(acinfo, db)) {
+                        SYLAR_LOG_ERROR(g_logger) << "db error errno=" << db->getErrno()
+                            << " errstr=" << db->getErrStr();
+                    }
                 }
             }
         }

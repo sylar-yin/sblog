@@ -26,6 +26,8 @@ sylar::IDB::ptr GetDB();
 
 std::string get_max_length_string(const std::string& str, size_t len);
 
+void SendWX(const std::string& group, const std::string& msg);
+
 }
 
 

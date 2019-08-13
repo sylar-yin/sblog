@@ -57,6 +57,7 @@ struct CookieKey {
 
     static const std::string COMMENT_LAST_TIME;
     static const std::string ARTICLE_LAST_TIME;
+    static const std::string EMAIL_LAST_TIME;
 };
 
 class BlogServlet : public sylar::http::Servlet {
@@ -65,6 +66,8 @@ public:
     int32_t handle(sylar::http::HttpRequest::ptr request
                    ,sylar::http::HttpResponse::ptr response
                    ,sylar::http::HttpSession::ptr session) override;
+
+    int64_t getUserId(sylar::http::HttpRequest::ptr request);
 protected:
     virtual bool handlePre(sylar::http::HttpRequest::ptr request
                            ,sylar::http::HttpResponse::ptr response
@@ -96,8 +99,6 @@ public:
                    ,sylar::http::HttpResponse::ptr response
                    ,sylar::http::HttpSession::ptr session
                    ,Result::ptr result) override;
-
-    int64_t getUserId(sylar::http::HttpRequest::ptr request);
 };
 
 }

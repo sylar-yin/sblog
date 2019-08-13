@@ -83,6 +83,7 @@ int32_t ArticleUpdateServlet::handle(sylar::http::HttpRequest::ptr request
             break;
         }
         result->setResult(200, "ok");
+        SendWX("blog", "[" + std::to_string(uid) + "]更新文章[" + title + "], 需要审核");
     } while(false);
     
     response->setBody(result->toJsonString());

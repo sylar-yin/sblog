@@ -59,6 +59,7 @@ int32_t UserActiveServlet::handle(sylar::http::HttpRequest::ptr request
                 << " errstr: " << db->getErrStr();
             break;
         }
+        SendWX("blog", "用户激活成功[" + auth_id + "]");
         result->setResult(200, "ok");
     } while(false);
     response->setBody(result->toJsonString());

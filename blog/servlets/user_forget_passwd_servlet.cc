@@ -9,6 +9,9 @@ namespace servlet {
 
 static sylar::Logger::ptr g_logger = SYLAR_LOG_ROOT();
 
+static sylar::ConfigVar<int64_t>::ptr g_email_interval_time =
+    sylar::Config::Lookup("email.interval_time", (int64_t)60, "email interval time second");
+
 UserForgetPasswdServlet::UserForgetPasswdServlet()
     :BlogServlet("UserForgetPasswd") {
 }
@@ -31,6 +34,20 @@ int32_t UserForgetPasswdServlet::handle(sylar::http::HttpRequest::ptr request
             result->setResult(403, "email not register");
             break;
         }
+
+        auto data = getSessionData(request, response);
+        if(!data) {
+            result->setResult(502, "not login");
+            break;
+        }
+
+        int64_t now = time(0);
+        int64_t email_time = data->getData<int64_t>(CookieKey::EMAIL_LAST_TIME);
+        if((now - email_time) < g_email_interval_time->getValue()) {
+            result->setResult(502, "article too often");
+            break;
+        }
+
         auto v = sylar::random_string(16);
         info->setCode(v);
         auto db = getDB();
@@ -57,6 +74,7 @@ int32_t UserForgetPasswdServlet::handle(sylar::http::HttpRequest::ptr request
             break;
         }
 
+        data->setData<int64_t>(CookieKey::EMAIL_LAST_TIME, now);
         auto r = client->send(mail, 5000);
         if(r->result != 0) {
             result->setResult(501, std::to_string(r->result) + " " + r->msg);

@@ -81,9 +81,10 @@ int32_t ArticleUpdateLabelServlet::handle(sylar::http::HttpRequest::ptr request
                     acinfo->setIsDeleted(0);
                     acinfo->setUpdateTime(now);
                     update_add_infos.push_back(acinfo);
-                    data::ArticleLabelRelInfoDao::Update(acinfo, db);
-                    SYLAR_LOG_ERROR(g_logger) << "db error errno=" << db->getErrno()
-                        << " errstr=" << db->getErrStr();
+                    if(data::ArticleLabelRelInfoDao::Update(acinfo, db)) {
+                        SYLAR_LOG_ERROR(g_logger) << "db error errno=" << db->getErrno()
+                            << " errstr=" << db->getErrStr();
+                    }
                 }
             } else {
                 acinfo.reset(new data::ArticleLabelRelInfo);
@@ -91,9 +92,10 @@ int32_t ArticleUpdateLabelServlet::handle(sylar::http::HttpRequest::ptr request
                 acinfo->setLabelId(cid);
                 acinfo->setUpdateTime(now);
                 new_infos.push_back(acinfo);
-                data::ArticleLabelRelInfoDao::Insert(acinfo, db);
-                SYLAR_LOG_ERROR(g_logger) << "db error errno=" << db->getErrno()
-                    << " errstr=" << db->getErrStr();
+                if(data::ArticleLabelRelInfoDao::Insert(acinfo, db)) {
+                    SYLAR_LOG_ERROR(g_logger) << "db error errno=" << db->getErrno()
+                        << " errstr=" << db->getErrStr();
+                }
             }
         }
         tmps.clear();
@@ -116,9 +118,10 @@ int32_t ArticleUpdateLabelServlet::handle(sylar::http::HttpRequest::ptr request
                     acinfo->setUpdateTime(now);
                     new_infos.push_back(acinfo);
                     update_del_infos.push_back(acinfo);
-                    data::ArticleLabelRelInfoDao::Update(acinfo, db);
-                    SYLAR_LOG_ERROR(g_logger) << "db error errno=" << db->getErrno()
-                        << " errstr=" << db->getErrStr();
+                    if(data::ArticleLabelRelInfoDao::Update(acinfo, db)) {
+                        SYLAR_LOG_ERROR(g_logger) << "db error errno=" << db->getErrno()
+                            << " errstr=" << db->getErrStr();
+                    }
                 }
             }
         }

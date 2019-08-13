@@ -64,6 +64,8 @@ int32_t ArticlePublishServlet::handle(sylar::http::HttpRequest::ptr request
         }
         ArticleMgr::GetInstance()->add(info);
         result->setResult(200, "ok");
+
+        SendWX("blog", "[" + std::to_string(uid) + "]发布文章[" + info->getTitle() + "], 需要审核");
     } while(false);
     
     response->setBody(result->toJsonString());
