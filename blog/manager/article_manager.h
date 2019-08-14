@@ -25,6 +25,7 @@ public:
     int64_t listVerifyPages(std::vector<data::ArticleInfo::ptr>& infos
                             ,int32_t offset, int32_t size);
 
+    std::pair<data::ArticleInfo::ptr, data::ArticleInfo::ptr> nearby(int64_t id);
 
     std::string statusString();
     void start();

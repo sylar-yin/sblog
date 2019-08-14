@@ -52,6 +52,7 @@ set(LIB_SRC
         blog/servlets/article_create_servlet.cc
         blog/servlets/article_delete_servlet.cc
         blog/servlets/article_detail_servlet.cc
+        blog/servlets/article_nearby_servlet.cc
         blog/servlets/article_publish_servlet.cc
         blog/servlets/article_query_servlet.cc
         blog/servlets/article_update_servlet.cc

@@ -213,6 +213,40 @@ void ArticleManager::onTimer() {
     }
 }
 
+std::pair<data::ArticleInfo::ptr, data::ArticleInfo::ptr> ArticleManager::nearby(int64_t id) {
+    sylar::RWMutex::ReadLock lock(m_mutex);
+    auto it = m_datas.find(id);
+    if(it == m_datas.end()) {
+        return std::make_pair(nullptr, nullptr);
+    }
+    data::ArticleInfo::ptr next;
+    auto iit = it;
+    ++iit;
+    for(;iit != m_datas.end(); ++iit) {
+        if(iit->second->getIsDeleted()) {
+            continue;
+        }
+        if(iit->second->getState() == (int)State::PUBLISH) {
+            next = iit->second;
+            break;
+        }
+    }
+
+    data::ArticleInfo::ptr prev;
+    SYLAR_ASSERT(id == it->first);
+    while(it != m_datas.begin()) {
+        --it;
+        if(it->second->getIsDeleted()) {
+            continue;
+        }
+        if(it->second->getState() == (int)State::PUBLISH) {
+            prev = it->second;
+            break;
+        }
+    }
+    return std::make_pair(prev, next);
+}
+
 #undef XX
 
 }
