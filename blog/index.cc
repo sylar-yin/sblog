@@ -4,6 +4,7 @@
 #include "blog/manager/category_manager.h"
 #include "blog/manager/label_manager.h"
 #include "sylar/log.h"
+#include "blog/word_parser.h"
 
 namespace blog {
 
@@ -47,7 +48,16 @@ void ParseParams(std::map<uint64_t, std::set<uint64_t> >& params,
         if(it == s_param_names.end()) {
             continue;
         }
-        auto parts = sylar::split(i.second, ',');
+        std::vector<std::string> parts;
+        if(it->second.key == (uint64_t)IndexType::WORD) {
+            auto parser = WordParserMgr::GetInstance();
+            if(!parser) {
+                continue;
+            }
+            parser->cut(i.second, parts);
+        } else {
+            parts = sylar::split(i.second, ',');
+        }
         for(auto& n : parts) {
             if(n.empty()) {
                 continue;
@@ -78,6 +88,9 @@ void ParseFields(std::map<uint64_t, std::set<uint64_t> >& params,
         if(it == s_param_names.end()) {
             continue;
         }
+        if(it->second.key == (uint64_t)IndexType::WORD) {
+            continue;
+        }
         params[it->second.key];
         auto parts = sylar::split(i.second, ',');
         for(auto& n : parts) {
@@ -100,6 +113,24 @@ Index::Index()
 
 uint64_t Index::StrHash(const std::string& str) {
     return sylar::murmur3_hash64(str.c_str());
+}
+
+void Index::buildWordIdx(const std::string& str, uint32_t idx) {
+    auto parser = WordParserMgr::GetInstance();
+    if(!parser) {
+        return;
+    }
+    std::vector<std::string> ws;
+    parser->cutForSearch(str, ws);
+
+    std::set<std::string> words(ws.begin(), ws.end());
+    ws.clear();
+    parser->cutAll(str, ws);
+    words.insert(ws.begin(), ws.end());
+
+    for(auto& i : words) {
+        set((uint64_t)IndexType::WORD, hash(i, true), idx, true);
+    }
 }
 
 uint64_t Index::hash(const std::string& str, bool save) {
@@ -162,6 +193,9 @@ void Index::buildIdx(data::ArticleInfo::ptr info, uint32_t idx) {
     set((uint64_t)IndexType::USER_ID, info->getUserId(), idx, true);
     set((uint64_t)IndexType::STATE, info->getState(), idx, true);
     set((uint64_t)IndexType::YEAR_MON, hash(sylar::Time2Str(info->getCreateTime(), "%Y年%m月"), true), idx, true);
+
+    buildWordIdx(info->getTitle(), idx);
+    buildWordIdx(info->getContent(), idx);
 
     std::vector<data::ArticleCategoryRelInfo::ptr> cats;
     ArticleCategoryRelMgr::GetInstance()->listByArticleId(cats, info->getId(), true);
@@ -279,6 +313,9 @@ std::string Index::toString() {
        << "]" << std::endl;
     for(auto& i : m_indexs) {
         ss << "    " << i.first << "(" << i.second.size() << "):" << std::endl;
+        if(i.first == (uint64_t)IndexType::WORD) {
+            continue;
+        }
         for(auto& n : i.second) {
             ss << "        " << n.first << ": " << n.second->getCount() << std::endl;
         }

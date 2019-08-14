@@ -4,6 +4,7 @@
 #include "blog/data/user_info.h"
 #include "sylar/application.h"
 #include "blog/index.h"
+#include "blog/word_parser.h"
 #include "blog/servlets/article_create_servlet.h"
 #include "blog/servlets/article_delete_servlet.h"
 #include "blog/servlets/article_detail_servlet.h"
@@ -128,6 +129,7 @@ bool MyModule::onServerReady() {
     XX(CommentMgr);
 #undef XX
 
+    WordParserMgr::GetInstance();
     IndexMgr::GetInstance()->build();
     sylar::IOManager::GetThis()->addTimer(5 * 60 * 1000, [](){
         IndexMgr::GetInstance()->build();

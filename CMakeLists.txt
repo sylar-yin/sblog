@@ -36,6 +36,7 @@ endif()
 
 set(LIB_SRC
         blog/my_module.cc
+        blog/word_parser.cc
         blog/index.cc
         blog/manager/article_manager.cc
         blog/manager/article_category_rel_manager.cc

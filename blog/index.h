@@ -15,7 +15,9 @@ enum class IndexType {
     CAT_NAME = 4,
     LABEL_NAME = 5, 
     STATE = 6,
-    YEAR_MON = 7
+    YEAR_MON = 7,
+
+    WORD = 100
 };
 
 #define INDEX_TYPE_MACRO(XX) \
@@ -25,7 +27,8 @@ enum class IndexType {
     XX("cat_name",    IndexType::CAT_NAME,     2)\
     XX("label_name",  IndexType::LABEL_NAME,   2)\
     XX("state",       IndexType::STATE,        1)\
-    XX("yearmon",     IndexType::YEAR_MON,     2)
+    XX("yearmon",     IndexType::YEAR_MON,     2)\
+    XX("word",        IndexType::WORD,     2)\
 
 
 void ParseParams(std::map<uint64_t, std::set<uint64_t> >& params,
@@ -62,6 +65,8 @@ public:
 private:
     sylar::ds::Bitmap::ptr query(const std::map<uint64_t, std::set<uint64_t> >& params);
     uint64_t hash(const std::string& str, bool save);
+
+    void buildWordIdx(const std::string& str, uint32_t idx);
 private:
     uint64_t m_createTime;
     uint64_t m_endTime;
