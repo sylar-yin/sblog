@@ -36,6 +36,7 @@ endif()
 
 set(LIB_SRC
         blog/my_module.cc
+        blog/index.cc
         blog/manager/article_manager.cc
         blog/manager/article_category_rel_manager.cc
         blog/manager/article_label_rel_manager.cc
@@ -53,6 +54,7 @@ set(LIB_SRC
         blog/servlets/article_delete_servlet.cc
         blog/servlets/article_detail_servlet.cc
         blog/servlets/article_nearby_servlet.cc
+        blog/servlets/article_property_servlet.cc
         blog/servlets/article_publish_servlet.cc
         blog/servlets/article_query_servlet.cc
         blog/servlets/article_update_servlet.cc

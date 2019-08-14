@@ -3,11 +3,13 @@
 #include "sylar/log.h"
 #include "blog/data/user_info.h"
 #include "sylar/application.h"
+#include "blog/index.h"
 #include "blog/servlets/article_create_servlet.h"
 #include "blog/servlets/article_delete_servlet.h"
 #include "blog/servlets/article_detail_servlet.h"
 #include "blog/servlets/article_nearby_servlet.h"
 #include "blog/servlets/article_query_servlet.h"
+#include "blog/servlets/article_property_servlet.h"
 #include "blog/servlets/article_publish_servlet.h"
 #include "blog/servlets/article_update_category_servlet.h"
 #include "blog/servlets/article_update_label_servlet.h"
@@ -126,6 +128,11 @@ bool MyModule::onServerReady() {
     XX(CommentMgr);
 #undef XX
 
+    IndexMgr::GetInstance()->build();
+    sylar::IOManager::GetThis()->addTimer(5 * 60 * 1000, [](){
+        IndexMgr::GetInstance()->build();
+    }, true);
+
     for(auto& i : servers) {
         auto hs = std::dynamic_pointer_cast<sylar::http::HttpServer>(i);
         auto dp = hs->getServletDispatch();
@@ -156,6 +163,7 @@ bool MyModule::onServerReady() {
         XX("/article/create", ArticleCreateServlet);
         XX("/article/delete", ArticleDeleteServlet);
         XX("/article/query",  ArticleQueryServlet);
+        XX("/article/property",  ArticlePropertyServlet);
         XX("/article/detail",  ArticleDetailServlet);
         XX("/article/snappy",  ArticleSnappyServlet);
         XX("/article/nearby",  ArticleNearbyServlet);
@@ -196,6 +204,14 @@ std::string MyModule::statusString() {
     ss << CommentMgr::GetInstance()->statusString() << std::endl;
     ss << ArticleLabelRelMgr::GetInstance()->statusString() << std::endl;
     ss << ArticleCategoryRelMgr::GetInstance()->statusString() << std::endl;
+
+    ss << "============================================" << std::endl;
+    auto idx = IndexMgr::GetInstance()->get();
+    if(idx) {
+        ss << idx->toString() << std::endl;
+    } else {
+        ss << "index building ";
+    }
     return ss.str();
 }
 

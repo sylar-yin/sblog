@@ -42,6 +42,9 @@ public:
     const int64_t& getPublishTime() { return m_publishTime; }
     void setPublishTime(const int64_t& v);
 
+    const int64_t& getWeight() { return m_weight; }
+    void setWeight(const int64_t& v);
+
     const int64_t& getCreateTime() { return m_createTime; }
     void setCreateTime(const int64_t& v);
 
@@ -56,6 +59,7 @@ private:
     int32_t m_isDeleted;
     int64_t m_id;
     int64_t m_userId;
+    int64_t m_weight;
     std::string m_title;
     std::string m_content;
     int64_t m_publishTime;
