@@ -70,6 +70,8 @@ int32_t UserCreateServlet::handle(sylar::http::HttpRequest::ptr request
         info->setPasswd(passwd);
         info->setState((int)State::VERIFYING);
         info->setName(account);
+        info->setCreateTime(time(0));
+        info->setUpdateTime(time(0));
         info->setCode(v);
 
         if(data::UserInfoDao::Insert(info, db)) {

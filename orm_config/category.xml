@@ -5,7 +5,7 @@
         <column name="name" type="string" length="20"/>
         <column name="parent_id" type="int64"/>
         <column name="is_deleted" type="int32"/>
-        <column name="create_time" type="datetime" default="current_timestamp"/>
+        <column name="create_time" type="datetime"/>
         <column name="update_time" type="datetime" update="current_timestamp"/>
     </columns>
     <indexs>

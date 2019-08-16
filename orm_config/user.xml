@@ -10,7 +10,7 @@
         <column name="state" type="int32"/>
         <column name="login_time" type="datetime"/>
         <column name="is_deleted" type="int32"/>
-        <column name="create_time" type="datetime" default="current_timestamp"/>
+        <column name="create_time" type="datetime"/>
         <column name="update_time" type="datetime" update="current_timestamp"/>
     </columns>
     <indexs>

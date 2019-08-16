@@ -17,7 +17,7 @@ UserInfo::UserInfo()
     ,m_name()
     ,m_code()
     ,m_loginTime()
-    ,m_createTime(time(0))
+    ,m_createTime()
     ,m_updateTime() {
 }
 
@@ -382,9 +382,9 @@ UserInfo::ptr UserInfoDao::QueryByName( const std::string& name, sylar::IDB::ptr
 }
 
 int UserInfoDao::CreateTableSQLite3(sylar::IDB::ptr conn) {
-    return conn->execute("CREATE TABLE user(id INTEGER PRIMARY KEY AUTOINCREMENT, account TEXT NOT NULL DEFAULT '', email TEXT NOT NULL DEFAULT '', passwd TEXT NOT NULL DEFAULT '', name TEXT NOT NULL DEFAULT '', code TEXT NOT NULL DEFAULT '', role INTEGER NOT NULL DEFAULT 0, state INTEGER NOT NULL DEFAULT 0, login_time TIMESTAMP NOT NULL DEFAULT '1980-01-01 00:00:00', is_deleted INTEGER NOT NULL DEFAULT 0, create_time TIMESTAMP NOT NULL DEFAULT current_timestamp, update_time TIMESTAMP NOT NULL DEFAULT '1980-01-01 00:00:00');CREATE UNIQUE INDEX user_account ON user(account);CREATE UNIQUE INDEX user_email ON user(email);CREATE UNIQUE INDEX user_name ON user(name);");
+    return conn->execute("CREATE TABLE user(id INTEGER PRIMARY KEY AUTOINCREMENT, account TEXT NOT NULL DEFAULT '', email TEXT NOT NULL DEFAULT '', passwd TEXT NOT NULL DEFAULT '', name TEXT NOT NULL DEFAULT '', code TEXT NOT NULL DEFAULT '', role INTEGER NOT NULL DEFAULT 0, state INTEGER NOT NULL DEFAULT 0, login_time TIMESTAMP NOT NULL DEFAULT '1980-01-01 00:00:00', is_deleted INTEGER NOT NULL DEFAULT 0, create_time TIMESTAMP NOT NULL DEFAULT '1980-01-01 00:00:00', update_time TIMESTAMP NOT NULL DEFAULT '1980-01-01 00:00:00');CREATE UNIQUE INDEX user_account ON user(account);CREATE UNIQUE INDEX user_email ON user(email);CREATE UNIQUE INDEX user_name ON user(name);");
 }int UserInfoDao::CreateTableMySQL(sylar::IDB::ptr conn) {
-    return conn->execute("CREATE TABLE user(id bigint AUTO_INCREMENT, account varchar(30) NOT NULL DEFAULT '', email varchar(50) NOT NULL DEFAULT '', passwd varchar(30) NOT NULL DEFAULT '', name varchar(30) NOT NULL DEFAULT '', code varchar(20) NOT NULL DEFAULT '', role int NOT NULL DEFAULT 0, state int NOT NULL DEFAULT 0, login_time timestamp NOT NULL DEFAULT '1980-01-01 00:00:00', is_deleted int NOT NULL DEFAULT 0, create_time timestamp NOT NULL DEFAULT current_timestamp, update_time timestamp NOT NULL DEFAULT '1980-01-01 00:00:00' ON UPDATE current_timestamp , PRIMARY KEY(id), UNIQUE KEY user_account (account), UNIQUE KEY user_email (email), UNIQUE KEY user_name (name))");
+    return conn->execute("CREATE TABLE user(id bigint AUTO_INCREMENT, account varchar(30) NOT NULL DEFAULT '', email varchar(50) NOT NULL DEFAULT '', passwd varchar(30) NOT NULL DEFAULT '', name varchar(30) NOT NULL DEFAULT '', code varchar(20) NOT NULL DEFAULT '', role int NOT NULL DEFAULT 0, state int NOT NULL DEFAULT 0, login_time timestamp NOT NULL DEFAULT '1980-01-01 00:00:00', is_deleted int NOT NULL DEFAULT 0, create_time timestamp NOT NULL DEFAULT '1980-01-01 00:00:00', update_time timestamp NOT NULL DEFAULT '1980-01-01 00:00:00' ON UPDATE current_timestamp , PRIMARY KEY(id), UNIQUE KEY user_account (account), UNIQUE KEY user_email (email), UNIQUE KEY user_name (name))");
 }
 } //namespace data
 } //namespace blog

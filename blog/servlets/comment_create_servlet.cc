@@ -68,6 +68,7 @@ int32_t CommentCreateServlet::handle(sylar::http::HttpRequest::ptr request
         cinfo->setUserId(uid);
         cinfo->setParentId(comment_id);
         cinfo->setState((int)State::VERIFYING);
+        cinfo->setCreateTime(time(0));
         cinfo->setUpdateTime(time(0));
         auto db = getDB();
         if(!db) {

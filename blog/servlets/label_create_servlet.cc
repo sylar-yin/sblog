@@ -40,6 +40,7 @@ int32_t LabelCreateServlet::handle(sylar::http::HttpRequest::ptr request
             new_label = true;
         }
         info->setIsDeleted(0);
+        info->setCreateTime(time(0));
         info->setUpdateTime(time(0));
 
         auto db = getDB();

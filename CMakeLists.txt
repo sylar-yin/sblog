@@ -94,5 +94,24 @@ add_dependencies(sblog liborm_data)
 target_link_libraries(sblog orm_data)
 force_redefine_file_macro_for_sources(sblog)
 
+set(LIBS
+        sylar
+        dl
+        pthread
+        yaml-cpp
+        ssl
+        protobuf
+        event
+        hiredis_vip
+        mysqlclient_r
+        zookeeper_mt
+        sqlite3
+        tinyxml2
+        orm_data
+        /apps/sylar/lib64/libjsoncpp.a
+        )
+
+sylar_add_executable(data_dump "blog/datadump.cc" orm_data "${LIBS}")
+
 SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)

@@ -12,7 +12,7 @@ ArticleCategoryRelInfo::ArticleCategoryRelInfo()
     ,m_articleId()
     ,m_categoryId()
     ,m_publishTime()
-    ,m_createTime(time(0))
+    ,m_createTime()
     ,m_updateTime() {
 }
 
@@ -275,9 +275,9 @@ ArticleCategoryRelInfo::ptr ArticleCategoryRelInfoDao::QueryByArticleIdCategoryI
 }
 
 int ArticleCategoryRelInfoDao::CreateTableSQLite3(sylar::IDB::ptr conn) {
-    return conn->execute("CREATE TABLE article_category_rel(id INTEGER PRIMARY KEY AUTOINCREMENT, article_id INTEGER NOT NULL DEFAULT '', category_id INTEGER NOT NULL DEFAULT '', is_deleted INTEGER NOT NULL DEFAULT 0, publish_time TIMESTAMP NOT NULL DEFAULT '1980-01-01 00:00:00', create_time TIMESTAMP NOT NULL DEFAULT current_timestamp, update_time TIMESTAMP NOT NULL DEFAULT '1980-01-01 00:00:00');CREATE INDEX article_category_rel_article_id ON article_category_rel(article_id);CREATE UNIQUE INDEX article_category_rel_article_id_category_id ON article_category_rel(article_id,category_id);");
+    return conn->execute("CREATE TABLE article_category_rel(id INTEGER PRIMARY KEY AUTOINCREMENT, article_id INTEGER NOT NULL DEFAULT 0, category_id INTEGER NOT NULL DEFAULT 0, is_deleted INTEGER NOT NULL DEFAULT 0, publish_time TIMESTAMP NOT NULL DEFAULT '1980-01-01 00:00:00', create_time TIMESTAMP NOT NULL DEFAULT '1980-01-01 00:00:00', update_time TIMESTAMP NOT NULL DEFAULT '1980-01-01 00:00:00');CREATE INDEX article_category_rel_article_id ON article_category_rel(article_id);CREATE UNIQUE INDEX article_category_rel_article_id_category_id ON article_category_rel(article_id,category_id);");
 }int ArticleCategoryRelInfoDao::CreateTableMySQL(sylar::IDB::ptr conn) {
-    return conn->execute("CREATE TABLE article_category_rel(id bigint AUTO_INCREMENT, article_id bigint NOT NULL DEFAULT '', category_id bigint NOT NULL DEFAULT '', is_deleted int NOT NULL DEFAULT 0, publish_time timestamp NOT NULL DEFAULT '1980-01-01 00:00:00', create_time timestamp NOT NULL DEFAULT current_timestamp, update_time timestamp NOT NULL DEFAULT '1980-01-01 00:00:00' ON UPDATE current_timestamp , PRIMARY KEY(id), KEY article_category_rel_article_id (article_id), UNIQUE KEY article_category_rel_article_id_category_id (article_id,category_id))");
+    return conn->execute("CREATE TABLE article_category_rel(id bigint AUTO_INCREMENT, article_id bigint NOT NULL DEFAULT 0, category_id bigint NOT NULL DEFAULT 0, is_deleted int NOT NULL DEFAULT 0, publish_time timestamp NOT NULL DEFAULT '1980-01-01 00:00:00', create_time timestamp NOT NULL DEFAULT '1980-01-01 00:00:00', update_time timestamp NOT NULL DEFAULT '1980-01-01 00:00:00' ON UPDATE current_timestamp , PRIMARY KEY(id), KEY article_category_rel_article_id (article_id), UNIQUE KEY article_category_rel_article_id_category_id (article_id,category_id))");
 }
 } //namespace data
 } //namespace blog

@@ -16,7 +16,7 @@ ArticleInfo::ArticleInfo()
     ,m_title()
     ,m_content()
     ,m_publishTime()
-    ,m_createTime(time(0))
+    ,m_createTime()
     ,m_updateTime() {
 }
 
@@ -282,9 +282,9 @@ int ArticleInfoDao::QueryByUserId(std::vector<ArticleInfo::ptr>& results,  const
 }
 
 int ArticleInfoDao::CreateTableSQLite3(sylar::IDB::ptr conn) {
-    return conn->execute("CREATE TABLE article(id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER NOT NULL DEFAULT '', title TEXT NOT NULL DEFAULT '', content TEXT NOT NULL DEFAULT '', type INTEGER NOT NULL DEFAULT 0, state INTEGER NOT NULL DEFAULT 0, is_deleted INTEGER NOT NULL DEFAULT 0, publish_time TIMESTAMP NOT NULL DEFAULT '1980-01-01 00:00:00', weight INTEGER NOT NULL DEFAULT '', create_time TIMESTAMP NOT NULL DEFAULT current_timestamp, update_time TIMESTAMP NOT NULL DEFAULT '1980-01-01 00:00:00');CREATE INDEX article_user_id ON article(user_id);");
+    return conn->execute("CREATE TABLE article(id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER NOT NULL DEFAULT 0, title TEXT NOT NULL DEFAULT '', content TEXT NOT NULL DEFAULT '', type INTEGER NOT NULL DEFAULT 0, state INTEGER NOT NULL DEFAULT 0, is_deleted INTEGER NOT NULL DEFAULT 0, publish_time TIMESTAMP NOT NULL DEFAULT '1980-01-01 00:00:00', weight INTEGER NOT NULL DEFAULT 0, create_time TIMESTAMP NOT NULL DEFAULT '1980-01-01 00:00:00', update_time TIMESTAMP NOT NULL DEFAULT '1980-01-01 00:00:00');CREATE INDEX article_user_id ON article(user_id);");
 }int ArticleInfoDao::CreateTableMySQL(sylar::IDB::ptr conn) {
-    return conn->execute("CREATE TABLE article(id bigint AUTO_INCREMENT, user_id bigint NOT NULL DEFAULT '', title varchar(100) NOT NULL DEFAULT '', content varchar(4096) NOT NULL DEFAULT '', type int NOT NULL DEFAULT 0, state int NOT NULL DEFAULT 0, is_deleted int NOT NULL DEFAULT 0, publish_time timestamp NOT NULL DEFAULT '1980-01-01 00:00:00', weight bigint NOT NULL DEFAULT '', create_time timestamp NOT NULL DEFAULT current_timestamp, update_time timestamp NOT NULL DEFAULT '1980-01-01 00:00:00' ON UPDATE current_timestamp , PRIMARY KEY(id), KEY article_user_id (user_id))");
+    return conn->execute("CREATE TABLE article(id bigint AUTO_INCREMENT, user_id bigint NOT NULL DEFAULT 0, title varchar(100) NOT NULL DEFAULT '', content varchar(4096) NOT NULL DEFAULT '', type int NOT NULL DEFAULT 0, state int NOT NULL DEFAULT 0, is_deleted int NOT NULL DEFAULT 0, publish_time timestamp NOT NULL DEFAULT '1980-01-01 00:00:00', weight bigint NOT NULL DEFAULT 0, create_time timestamp NOT NULL DEFAULT '1980-01-01 00:00:00', update_time timestamp NOT NULL DEFAULT '1980-01-01 00:00:00' ON UPDATE current_timestamp , PRIMARY KEY(id), KEY article_user_id (user_id))");
 }
 } //namespace data
 } //namespace blog

@@ -129,7 +129,7 @@ void Index::buildWordIdx(const std::string& str, uint32_t idx) {
     words.insert(ws.begin(), ws.end());
 
     for(auto& i : words) {
-        set((uint64_t)IndexType::WORD, hash(i, true), idx, true);
+        set((uint64_t)IndexType::WORD, hash(i, false), idx, true);
     }
 }
 

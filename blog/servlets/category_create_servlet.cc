@@ -52,6 +52,7 @@ int32_t CategoryCreateServlet::handle(sylar::http::HttpRequest::ptr request
         }
         info->setParentId(parent_id);
         info->setIsDeleted(0);
+        info->setCreateTime(time(0));
         info->setUpdateTime(time(0));
 
         auto db = getDB();

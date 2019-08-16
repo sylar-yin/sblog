@@ -60,6 +60,7 @@ int32_t ArticleCreateServlet::handle(sylar::http::HttpRequest::ptr request
         info->setContent(content);
         info->setType(type);
         info->setUserId(uid);
+        info->setCreateTime(time(0));
         info->setUpdateTime(time(0));
         auto db = getDB();
         if(!db) {

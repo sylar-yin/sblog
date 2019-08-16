@@ -12,7 +12,7 @@ CategoryInfo::CategoryInfo()
     ,m_userId()
     ,m_parentId()
     ,m_name()
-    ,m_createTime(time(0))
+    ,m_createTime()
     ,m_updateTime() {
 }
 
@@ -275,9 +275,9 @@ CategoryInfo::ptr CategoryInfoDao::QueryByUserIdName( const int64_t& user_id,  c
 }
 
 int CategoryInfoDao::CreateTableSQLite3(sylar::IDB::ptr conn) {
-    return conn->execute("CREATE TABLE category(id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER NOT NULL DEFAULT '', name TEXT NOT NULL DEFAULT '', parent_id INTEGER NOT NULL DEFAULT '', is_deleted INTEGER NOT NULL DEFAULT 0, create_time TIMESTAMP NOT NULL DEFAULT current_timestamp, update_time TIMESTAMP NOT NULL DEFAULT '1980-01-01 00:00:00');CREATE INDEX category_user_id ON category(user_id);CREATE UNIQUE INDEX category_user_id_name ON category(user_id,name);");
+    return conn->execute("CREATE TABLE category(id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER NOT NULL DEFAULT 0, name TEXT NOT NULL DEFAULT '', parent_id INTEGER NOT NULL DEFAULT 0, is_deleted INTEGER NOT NULL DEFAULT 0, create_time TIMESTAMP NOT NULL DEFAULT '1980-01-01 00:00:00', update_time TIMESTAMP NOT NULL DEFAULT '1980-01-01 00:00:00');CREATE INDEX category_user_id ON category(user_id);CREATE UNIQUE INDEX category_user_id_name ON category(user_id,name);");
 }int CategoryInfoDao::CreateTableMySQL(sylar::IDB::ptr conn) {
-    return conn->execute("CREATE TABLE category(id bigint AUTO_INCREMENT, user_id bigint NOT NULL DEFAULT '', name varchar(20) NOT NULL DEFAULT '', parent_id bigint NOT NULL DEFAULT '', is_deleted int NOT NULL DEFAULT 0, create_time timestamp NOT NULL DEFAULT current_timestamp, update_time timestamp NOT NULL DEFAULT '1980-01-01 00:00:00' ON UPDATE current_timestamp , PRIMARY KEY(id), KEY category_user_id (user_id), UNIQUE KEY category_user_id_name (user_id,name))");
+    return conn->execute("CREATE TABLE category(id bigint AUTO_INCREMENT, user_id bigint NOT NULL DEFAULT 0, name varchar(20) NOT NULL DEFAULT '', parent_id bigint NOT NULL DEFAULT 0, is_deleted int NOT NULL DEFAULT 0, create_time timestamp NOT NULL DEFAULT '1980-01-01 00:00:00', update_time timestamp NOT NULL DEFAULT '1980-01-01 00:00:00' ON UPDATE current_timestamp , PRIMARY KEY(id), KEY category_user_id (user_id), UNIQUE KEY category_user_id_name (user_id,name))");
 }
 } //namespace data
 } //namespace blog
