@@ -5,6 +5,7 @@
 #include "blog/data/comment_info.h"
 #include "blog/data/label_info.h"
 #include "blog/data/user_info.h"
+#include "blog/data/channel_info.h"
 
 #include "sylar/db/db.h"
 #include "sylar/db/sqlite3.h"
@@ -140,6 +141,7 @@ int main(int argc, char** argv) {
     XX(blog::data::CommentInfo);
     XX(blog::data::LabelInfo);
     XX(blog::data::UserInfo);
+    XX(blog::data::ChannelInfo);
 #undef XX
     return 0;
 }

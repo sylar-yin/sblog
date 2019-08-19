@@ -1,6 +1,7 @@
 #include "article_update_servlet.h"
 #include "sylar/log.h"
 #include "blog/manager/article_manager.h"
+#include "blog/manager/channel_manager.h"
 #include "sylar/util.h"
 #include "blog/my_module.h"
 #include "sylar/email/smtp.h"
@@ -28,6 +29,7 @@ int32_t ArticleUpdateServlet::handle(sylar::http::HttpRequest::ptr request
         std::string title = request->getParam("title");
         std::string content = request->getParam("content");
         int32_t type = request->getParamAs<int32_t>("type");
+        int32_t channel = request->getParamAs<int32_t>("channel");
 
         if(type && type != 1
                 && type != 2) {
@@ -41,7 +43,6 @@ int32_t ArticleUpdateServlet::handle(sylar::http::HttpRequest::ptr request
             result->setResult(401, "param title,content,type all is null");
             break;
         }
-
         int64_t uid = getUserId(request);
         if(!uid) {
             result->setResult(500, "not login");
@@ -59,9 +60,18 @@ int32_t ArticleUpdateServlet::handle(sylar::http::HttpRequest::ptr request
             break;
         }
 
+        if(channel) {
+            if(!ChannelMgr::GetInstance()->get(channel)) {
+                result->setResult(402, " invalid channel");
+                break;
+            }
+            info->setChannel(channel);
+        }
+
         if(!title.empty()) {
             info->setTitle(title);
         }
+
         if(!content.empty()) {
             info->setContent(content);
         }

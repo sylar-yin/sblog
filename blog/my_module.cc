@@ -23,6 +23,7 @@
 #include "blog/servlets/category_create_servlet.h"
 #include "blog/servlets/category_delete_servlet.h"
 #include "blog/servlets/category_query_servlet.h"
+#include "blog/servlets/channel_query_servlet.h"
 #include "blog/servlets/comment_create_servlet.h"
 #include "blog/servlets/comment_delete_servlet.h"
 #include "blog/servlets/comment_detail_servlet.h"
@@ -47,6 +48,7 @@
 #include "blog/manager/article_label_rel_manager.h"
 #include "blog/manager/article_manager.h"
 #include "blog/manager/category_manager.h"
+#include "blog/manager/channel_manager.h"
 #include "blog/manager/comment_manager.h"
 #include "blog/manager/label_manager.h"
 #include "blog/manager/user_manager.h"
@@ -128,6 +130,7 @@ bool MyModule::onServerReady() {
     XX(ArticleCategoryRelMgr);
     XX(ArticleLabelRelMgr);
     XX(CategoryMgr);
+    XX(ChannelMgr);
     XX(LabelMgr);
     XX(CommentMgr);
 #undef XX
@@ -190,6 +193,8 @@ bool MyModule::onServerReady() {
         XX("/comment/verify",       CommentVerifyServlet);
         XX("/comment/verify_list",  CommentVerifyListServlet);
         XX("/comment/query",        CommentQueryServlet);
+
+        XX("/channel/query",        ChannelQueryServlet);
     }
 
     ArticleMgr::GetInstance()->start();

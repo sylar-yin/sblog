@@ -30,9 +30,6 @@ public:
     const int32_t& getIsDeleted() { return m_isDeleted; }
     void setIsDeleted(const int32_t& v);
 
-    const int64_t& getPublishTime() { return m_publishTime; }
-    void setPublishTime(const int64_t& v);
-
     const int64_t& getCreateTime() { return m_createTime; }
     void setCreateTime(const int64_t& v);
 
@@ -46,7 +43,6 @@ private:
     int64_t m_id;
     int64_t m_articleId;
     int64_t m_categoryId;
-    int64_t m_publishTime;
     int64_t m_createTime;
     int64_t m_updateTime;
 };

@@ -316,18 +316,18 @@ int CommentInfoDao::CreateTableSQLite3(sylar::IDB::ptr conn) {
 
 int CommentInfoDao::CreateTableMySQL(sylar::IDB::ptr conn) {
     return conn->execute("CREATE TABLE comment("
-            "`id` bigint AUTO_INCREMENT,"
-            "`user_id` bigint NOT NULL DEFAULT 0,"
-            "`article_id` bigint NOT NULL DEFAULT 0,"
-            "`content` varchar(4096) NOT NULL DEFAULT '',"
-            "`parent_id` bigint NOT NULL DEFAULT 0,"
-            "`state` int NOT NULL DEFAULT 0,"
-            "`is_deleted` int NOT NULL DEFAULT 0,"
-            "`create_time` timestamp NOT NULL DEFAULT '1980-01-01 00:00:00',"
-            "`update_time` timestamp NOT NULL DEFAULT '1980-01-01 00:00:00' ON UPDATE current_timestamp ,"
+            "`id` bigint AUTO_INCREMENT COMMENT '评论id',"
+            "`user_id` bigint NOT NULL DEFAULT 0 COMMENT '用户id',"
+            "`article_id` bigint NOT NULL DEFAULT 0 COMMENT '文章id',"
+            "`content` varchar(4096) NOT NULL DEFAULT '' COMMENT '内容',"
+            "`parent_id` bigint NOT NULL DEFAULT 0 COMMENT '父评论id',"
+            "`state` int NOT NULL DEFAULT 0 COMMENT '状态1审核中2已发布',"
+            "`is_deleted` int NOT NULL DEFAULT 0 COMMENT '是否删除',"
+            "`create_time` timestamp NOT NULL DEFAULT '1980-01-01 00:00:00' COMMENT '创建时间',"
+            "`update_time` timestamp NOT NULL DEFAULT '1980-01-01 00:00:00' ON UPDATE current_timestamp  COMMENT '更新时间',"
             "PRIMARY KEY(`id`),"
             "KEY `comment_user_id` (`user_id`),"
-            "KEY `comment_article_id` (`article_id`))");
+            "KEY `comment_article_id` (`article_id`)) COMMENT='评论表'");
 }
 } //namespace data
 } //namespace blog

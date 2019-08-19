@@ -276,15 +276,15 @@ int ArticleLabelRelInfoDao::CreateTableSQLite3(sylar::IDB::ptr conn) {
 
 int ArticleLabelRelInfoDao::CreateTableMySQL(sylar::IDB::ptr conn) {
     return conn->execute("CREATE TABLE article_label_rel("
-            "`id` bigint AUTO_INCREMENT,"
-            "`article_id` bigint NOT NULL DEFAULT 0,"
-            "`label_id` bigint NOT NULL DEFAULT 0,"
-            "`is_deleted` int NOT NULL DEFAULT 0,"
-            "`create_time` timestamp NOT NULL DEFAULT '1980-01-01 00:00:00',"
-            "`update_time` timestamp NOT NULL DEFAULT '1980-01-01 00:00:00' ON UPDATE current_timestamp ,"
+            "`id` bigint AUTO_INCREMENT COMMENT '自增长id',"
+            "`article_id` bigint NOT NULL DEFAULT 0 COMMENT '文章id',"
+            "`label_id` bigint NOT NULL DEFAULT 0 COMMENT '标签id',"
+            "`is_deleted` int NOT NULL DEFAULT 0 COMMENT '是否删除',"
+            "`create_time` timestamp NOT NULL DEFAULT '1980-01-01 00:00:00' COMMENT '创建时间',"
+            "`update_time` timestamp NOT NULL DEFAULT '1980-01-01 00:00:00' ON UPDATE current_timestamp  COMMENT '更新时间',"
             "PRIMARY KEY(`id`),"
             "KEY `article_label_rel_article_id` (`article_id`),"
-            "UNIQUE KEY `article_label_rel_article_id_label_id` (`article_id`,`label_id`))");
+            "UNIQUE KEY `article_label_rel_article_id_label_id` (`article_id`,`label_id`)) COMMENT='文章标签关系表'");
 }
 } //namespace data
 } //namespace blog

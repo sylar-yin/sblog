@@ -1,12 +1,11 @@
-<table name="article_category_rel" namespace="blog.data">
+<table name="article_category_rel" namespace="blog.data" desc="文章类目关系表">
     <columns>
-        <column name="id" type="int64" auto_increment="true"/>
-        <column name="article_id" type="int64"/>
-        <column name="category_id" type="int64"/>
-        <column name="is_deleted" type="int32"/>
-        <column name="publish_time" type="datetime"/>
-        <column name="create_time" type="datetime"/>
-        <column name="update_time" type="datetime" update="current_timestamp"/>
+        <column name="id" type="int64" auto_increment="true" desc="自增长id"/>
+        <column name="article_id" type="int64" desc="文章id"/>
+        <column name="category_id" type="int64" desc="类目id"/>
+        <column name="is_deleted" type="int32" desc="是否删除"/>
+        <column name="create_time" type="datetime" desc="创建时间"/>
+        <column name="update_time" type="datetime" update="current_timestamp" desc="更新时间"/>
     </columns>
     <indexs>
         <index name="pk" cols="id" type="pk"/>

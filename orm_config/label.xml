@@ -1,11 +1,11 @@
-<table name="label" namespace="blog.data">
+<table name="label" namespace="blog.data" desc="标签表">
     <columns>
-        <column name="id" type="int64" auto_increment="true"/>
-        <column name="user_id" type="int64"/>
-        <column name="name" type="string" length="20"/>
-        <column name="is_deleted" type="int32"/>
-        <column name="create_time" type="datetime"/>
-        <column name="update_time" type="datetime" update="current_timestamp"/>
+        <column name="id" type="int64" auto_increment="true" desc="标签id"/>
+        <column name="user_id" type="int64" desc="用户id"/>
+        <column name="name" type="string" length="100" desc="名称"/>
+        <column name="is_deleted" type="int32" desc="是否删除"/>
+        <column name="create_time" type="datetime" desc="创建时间"/>
+        <column name="update_time" type="datetime" update="current_timestamp" desc="更新时间"/>
     </columns>
     <indexs>
         <index name="pk" cols="id" type="pk"/>

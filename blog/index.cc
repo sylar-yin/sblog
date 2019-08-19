@@ -193,6 +193,7 @@ void Index::buildIdx(data::ArticleInfo::ptr info, uint32_t idx) {
     set((uint64_t)IndexType::USER_ID, info->getUserId(), idx, true);
     set((uint64_t)IndexType::STATE, info->getState(), idx, true);
     set((uint64_t)IndexType::YEAR_MON, hash(sylar::Time2Str(info->getCreateTime(), "%Y年%m月"), true), idx, true);
+    set((uint64_t)IndexType::CHANNEL, info->getChannel(), idx, true);
 
     buildWordIdx(info->getTitle(), idx);
     buildWordIdx(info->getContent(), idx);

@@ -12,6 +12,7 @@ ArticleInfo::ArticleInfo()
     ,m_isDeleted()
     ,m_id()
     ,m_userId()
+    ,m_channel()
     ,m_weight()
     ,m_views()
     ,m_praise()
@@ -31,6 +32,7 @@ std::string ArticleInfo::toJsonString() const {
     jvalue["content"] = m_content;
     jvalue["type"] = m_type;
     jvalue["state"] = m_state;
+    jvalue["channel"] = std::to_string(m_channel);
     jvalue["is_deleted"] = m_isDeleted;
     jvalue["publish_time"] = sylar::Time2Str(m_publishTime);
     jvalue["weight"] = std::to_string(m_weight);
@@ -64,6 +66,10 @@ void ArticleInfo::setType(const int32_t& v) {
 
 void ArticleInfo::setState(const int32_t& v) {
     m_state = v;
+}
+
+void ArticleInfo::setChannel(const int64_t& v) {
+    m_channel = v;
 }
 
 void ArticleInfo::setIsDeleted(const int32_t& v) {
@@ -100,7 +106,7 @@ void ArticleInfo::setUpdateTime(const int64_t& v) {
 
 
 int ArticleInfoDao::Update(ArticleInfo::ptr info, sylar::IDB::ptr conn) {
-    std::string sql = "update article set user_id = ?, title = ?, content = ?, type = ?, state = ?, is_deleted = ?, publish_time = ?, weight = ?, views = ?, praise = ?, favorites = ?, create_time = ?, update_time = ? where id = ?";
+    std::string sql = "update article set user_id = ?, title = ?, content = ?, type = ?, state = ?, channel = ?, is_deleted = ?, publish_time = ?, weight = ?, views = ?, praise = ?, favorites = ?, create_time = ?, update_time = ? where id = ?";
     auto stmt = conn->prepare(sql);
     if(!stmt) {
         SYLAR_LOG_ERROR(g_logger) << "stmt=" << sql
@@ -112,20 +118,21 @@ int ArticleInfoDao::Update(ArticleInfo::ptr info, sylar::IDB::ptr conn) {
     stmt->bindString(3, info->m_content);
     stmt->bindInt32(4, info->m_type);
     stmt->bindInt32(5, info->m_state);
-    stmt->bindInt32(6, info->m_isDeleted);
-    stmt->bindTime(7, info->m_publishTime);
-    stmt->bindInt64(8, info->m_weight);
-    stmt->bindInt64(9, info->m_views);
-    stmt->bindInt64(10, info->m_praise);
-    stmt->bindInt64(11, info->m_favorites);
-    stmt->bindTime(12, info->m_createTime);
-    stmt->bindTime(13, info->m_updateTime);
-    stmt->bindInt64(14, info->m_id);
+    stmt->bindInt64(6, info->m_channel);
+    stmt->bindInt32(7, info->m_isDeleted);
+    stmt->bindTime(8, info->m_publishTime);
+    stmt->bindInt64(9, info->m_weight);
+    stmt->bindInt64(10, info->m_views);
+    stmt->bindInt64(11, info->m_praise);
+    stmt->bindInt64(12, info->m_favorites);
+    stmt->bindTime(13, info->m_createTime);
+    stmt->bindTime(14, info->m_updateTime);
+    stmt->bindInt64(15, info->m_id);
     return stmt->execute();
 }
 
 int ArticleInfoDao::Insert(ArticleInfo::ptr info, sylar::IDB::ptr conn) {
-    std::string sql = "insert into article (user_id, title, content, type, state, is_deleted, publish_time, weight, views, praise, favorites, create_time, update_time) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    std::string sql = "insert into article (user_id, title, content, type, state, channel, is_deleted, publish_time, weight, views, praise, favorites, create_time, update_time) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     auto stmt = conn->prepare(sql);
     if(!stmt) {
         SYLAR_LOG_ERROR(g_logger) << "stmt=" << sql
@@ -137,14 +144,15 @@ int ArticleInfoDao::Insert(ArticleInfo::ptr info, sylar::IDB::ptr conn) {
     stmt->bindString(3, info->m_content);
     stmt->bindInt32(4, info->m_type);
     stmt->bindInt32(5, info->m_state);
-    stmt->bindInt32(6, info->m_isDeleted);
-    stmt->bindTime(7, info->m_publishTime);
-    stmt->bindInt64(8, info->m_weight);
-    stmt->bindInt64(9, info->m_views);
-    stmt->bindInt64(10, info->m_praise);
-    stmt->bindInt64(11, info->m_favorites);
-    stmt->bindTime(12, info->m_createTime);
-    stmt->bindTime(13, info->m_updateTime);
+    stmt->bindInt64(6, info->m_channel);
+    stmt->bindInt32(7, info->m_isDeleted);
+    stmt->bindTime(8, info->m_publishTime);
+    stmt->bindInt64(9, info->m_weight);
+    stmt->bindInt64(10, info->m_views);
+    stmt->bindInt64(11, info->m_praise);
+    stmt->bindInt64(12, info->m_favorites);
+    stmt->bindTime(13, info->m_createTime);
+    stmt->bindTime(14, info->m_updateTime);
     int rt = stmt->execute();
     if(rt == 0) {
         info->m_id = conn->getLastInsertId();
@@ -156,7 +164,7 @@ int ArticleInfoDao::InsertOrUpdate(ArticleInfo::ptr info, sylar::IDB::ptr conn) 
     if(info->m_id == 0) {
         return Insert(info, conn);
     }
-    std::string sql = "replace into article (id, user_id, title, content, type, state, is_deleted, publish_time, weight, views, praise, favorites, create_time, update_time) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    std::string sql = "replace into article (id, user_id, title, content, type, state, channel, is_deleted, publish_time, weight, views, praise, favorites, create_time, update_time) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     auto stmt = conn->prepare(sql);
     if(!stmt) {
         SYLAR_LOG_ERROR(g_logger) << "stmt=" << sql
@@ -169,14 +177,15 @@ int ArticleInfoDao::InsertOrUpdate(ArticleInfo::ptr info, sylar::IDB::ptr conn) 
     stmt->bindString(4, info->m_content);
     stmt->bindInt32(5, info->m_type);
     stmt->bindInt32(6, info->m_state);
-    stmt->bindInt32(7, info->m_isDeleted);
-    stmt->bindTime(8, info->m_publishTime);
-    stmt->bindInt64(9, info->m_weight);
-    stmt->bindInt64(10, info->m_views);
-    stmt->bindInt64(11, info->m_praise);
-    stmt->bindInt64(12, info->m_favorites);
-    stmt->bindTime(13, info->m_createTime);
-    stmt->bindTime(14, info->m_updateTime);
+    stmt->bindInt64(7, info->m_channel);
+    stmt->bindInt32(8, info->m_isDeleted);
+    stmt->bindTime(9, info->m_publishTime);
+    stmt->bindInt64(10, info->m_weight);
+    stmt->bindInt64(11, info->m_views);
+    stmt->bindInt64(12, info->m_praise);
+    stmt->bindInt64(13, info->m_favorites);
+    stmt->bindTime(14, info->m_createTime);
+    stmt->bindTime(15, info->m_updateTime);
     return stmt->execute();
 }
 
@@ -217,7 +226,7 @@ int ArticleInfoDao::DeleteByUserId( const int64_t& user_id, sylar::IDB::ptr conn
 }
 
 int ArticleInfoDao::QueryAll(std::vector<ArticleInfo::ptr>& results, sylar::IDB::ptr conn) {
-    std::string sql = "select id, user_id, title, content, type, state, is_deleted, publish_time, weight, views, praise, favorites, create_time, update_time from article";
+    std::string sql = "select id, user_id, title, content, type, state, channel, is_deleted, publish_time, weight, views, praise, favorites, create_time, update_time from article";
     auto stmt = conn->prepare(sql);
     if(!stmt) {
         SYLAR_LOG_ERROR(g_logger) << "stmt=" << sql
@@ -236,21 +245,22 @@ int ArticleInfoDao::QueryAll(std::vector<ArticleInfo::ptr>& results, sylar::IDB:
         v->m_content = rt->getString(3);
         v->m_type = rt->getInt32(4);
         v->m_state = rt->getInt32(5);
-        v->m_isDeleted = rt->getInt32(6);
-        v->m_publishTime = rt->getTime(7);
-        v->m_weight = rt->getInt64(8);
-        v->m_views = rt->getInt64(9);
-        v->m_praise = rt->getInt64(10);
-        v->m_favorites = rt->getInt64(11);
-        v->m_createTime = rt->getTime(12);
-        v->m_updateTime = rt->getTime(13);
+        v->m_channel = rt->getInt64(6);
+        v->m_isDeleted = rt->getInt32(7);
+        v->m_publishTime = rt->getTime(8);
+        v->m_weight = rt->getInt64(9);
+        v->m_views = rt->getInt64(10);
+        v->m_praise = rt->getInt64(11);
+        v->m_favorites = rt->getInt64(12);
+        v->m_createTime = rt->getTime(13);
+        v->m_updateTime = rt->getTime(14);
         results.push_back(v);
     }
     return 0;
 }
 
 ArticleInfo::ptr ArticleInfoDao::Query( const int64_t& id, sylar::IDB::ptr conn) {
-    std::string sql = "select id, user_id, title, content, type, state, is_deleted, publish_time, weight, views, praise, favorites, create_time, update_time from article where id = ?";
+    std::string sql = "select id, user_id, title, content, type, state, channel, is_deleted, publish_time, weight, views, praise, favorites, create_time, update_time from article where id = ?";
     auto stmt = conn->prepare(sql);
     if(!stmt) {
         SYLAR_LOG_ERROR(g_logger) << "stmt=" << sql
@@ -272,19 +282,20 @@ ArticleInfo::ptr ArticleInfoDao::Query( const int64_t& id, sylar::IDB::ptr conn)
     v->m_content = rt->getString(3);
     v->m_type = rt->getInt32(4);
     v->m_state = rt->getInt32(5);
-    v->m_isDeleted = rt->getInt32(6);
-    v->m_publishTime = rt->getTime(7);
-    v->m_weight = rt->getInt64(8);
-    v->m_views = rt->getInt64(9);
-    v->m_praise = rt->getInt64(10);
-    v->m_favorites = rt->getInt64(11);
-    v->m_createTime = rt->getTime(12);
-    v->m_updateTime = rt->getTime(13);
+    v->m_channel = rt->getInt64(6);
+    v->m_isDeleted = rt->getInt32(7);
+    v->m_publishTime = rt->getTime(8);
+    v->m_weight = rt->getInt64(9);
+    v->m_views = rt->getInt64(10);
+    v->m_praise = rt->getInt64(11);
+    v->m_favorites = rt->getInt64(12);
+    v->m_createTime = rt->getTime(13);
+    v->m_updateTime = rt->getTime(14);
     return v;
 }
 
 int ArticleInfoDao::QueryByUserId(std::vector<ArticleInfo::ptr>& results,  const int64_t& user_id, sylar::IDB::ptr conn) {
-    std::string sql = "select id, user_id, title, content, type, state, is_deleted, publish_time, weight, views, praise, favorites, create_time, update_time from article where user_id = ?";
+    std::string sql = "select id, user_id, title, content, type, state, channel, is_deleted, publish_time, weight, views, praise, favorites, create_time, update_time from article where user_id = ?";
     auto stmt = conn->prepare(sql);
     if(!stmt) {
         SYLAR_LOG_ERROR(g_logger) << "stmt=" << sql
@@ -304,14 +315,15 @@ int ArticleInfoDao::QueryByUserId(std::vector<ArticleInfo::ptr>& results,  const
         v->m_content = rt->getString(3);
         v->m_type = rt->getInt32(4);
         v->m_state = rt->getInt32(5);
-        v->m_isDeleted = rt->getInt32(6);
-        v->m_publishTime = rt->getTime(7);
-        v->m_weight = rt->getInt64(8);
-        v->m_views = rt->getInt64(9);
-        v->m_praise = rt->getInt64(10);
-        v->m_favorites = rt->getInt64(11);
-        v->m_createTime = rt->getTime(12);
-        v->m_updateTime = rt->getTime(13);
+        v->m_channel = rt->getInt64(6);
+        v->m_isDeleted = rt->getInt32(7);
+        v->m_publishTime = rt->getTime(8);
+        v->m_weight = rt->getInt64(9);
+        v->m_views = rt->getInt64(10);
+        v->m_praise = rt->getInt64(11);
+        v->m_favorites = rt->getInt64(12);
+        v->m_createTime = rt->getTime(13);
+        v->m_updateTime = rt->getTime(14);
         results.push_back(v);
     };
     return 0;
@@ -325,6 +337,7 @@ int ArticleInfoDao::CreateTableSQLite3(sylar::IDB::ptr conn) {
             "content TEXT NOT NULL DEFAULT '',"
             "type INTEGER NOT NULL DEFAULT 0,"
             "state INTEGER NOT NULL DEFAULT 0,"
+            "channel INTEGER NOT NULL DEFAULT 0,"
             "is_deleted INTEGER NOT NULL DEFAULT 0,"
             "publish_time TIMESTAMP NOT NULL DEFAULT '1980-01-01 00:00:00',"
             "weight INTEGER NOT NULL DEFAULT 0,"
@@ -339,20 +352,21 @@ int ArticleInfoDao::CreateTableSQLite3(sylar::IDB::ptr conn) {
 
 int ArticleInfoDao::CreateTableMySQL(sylar::IDB::ptr conn) {
     return conn->execute("CREATE TABLE article("
-            "`id` bigint AUTO_INCREMENT,"
-            "`user_id` bigint NOT NULL DEFAULT 0,"
-            "`title` varchar(100) NOT NULL DEFAULT '',"
-            "`content` text NOT NULL DEFAULT '',"
-            "`type` int NOT NULL DEFAULT 0,"
-            "`state` int NOT NULL DEFAULT 0,"
-            "`is_deleted` int NOT NULL DEFAULT 0,"
-            "`publish_time` timestamp NOT NULL DEFAULT '1980-01-01 00:00:00',"
-            "`weight` bigint NOT NULL DEFAULT 0,"
+            "`id` bigint AUTO_INCREMENT COMMENT '文章id',"
+            "`user_id` bigint NOT NULL DEFAULT 0 COMMENT '用户id',"
+            "`title` varchar(256) NOT NULL DEFAULT '' COMMENT '文章标题',"
+            "`content` text NOT NULL DEFAULT '' COMMENT '文章内容',"
+            "`type` int NOT NULL DEFAULT 0 COMMENT '类型 1:原创,2:转发',"
+            "`state` int NOT NULL DEFAULT 0 COMMENT '状态1审核中2已发布3未通过4待发布',"
+            "`channel` bigint NOT NULL DEFAULT 0 COMMENT '频道id',"
+            "`is_deleted` int NOT NULL DEFAULT 0 COMMENT '是否删除',"
+            "`publish_time` timestamp NOT NULL DEFAULT '1980-01-01 00:00:00' COMMENT '发布时间',"
+            "`weight` bigint NOT NULL DEFAULT 0 COMMENT '权重',"
             "`views` bigint NOT NULL DEFAULT 0 COMMENT '流量数',"
             "`praise` bigint NOT NULL DEFAULT 0 COMMENT '点赞数',"
             "`favorites` bigint NOT NULL DEFAULT 0 COMMENT '收藏数',"
-            "`create_time` timestamp NOT NULL DEFAULT '1980-01-01 00:00:00',"
-            "`update_time` timestamp NOT NULL DEFAULT '1980-01-01 00:00:00' ON UPDATE current_timestamp ,"
+            "`create_time` timestamp NOT NULL DEFAULT '1980-01-01 00:00:00' COMMENT '创建时间',"
+            "`update_time` timestamp NOT NULL DEFAULT '1980-01-01 00:00:00' ON UPDATE current_timestamp  COMMENT '更新时间',"
             "PRIMARY KEY(`id`),"
             "KEY `article_user_id` (`user_id`)) COMMENT='博客文章'");
 }

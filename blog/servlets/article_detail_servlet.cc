@@ -1,6 +1,7 @@
 #include "article_detail_servlet.h"
 #include "sylar/log.h"
 #include "blog/manager/article_manager.h"
+#include "blog/manager/channel_manager.h"
 #include "blog/manager/article_category_rel_manager.h"
 #include "blog/manager/article_label_rel_manager.h"
 #include "blog/manager/category_manager.h"
@@ -46,6 +47,13 @@ int32_t ArticleDetailServlet::handle(sylar::http::HttpRequest::ptr request
         result->set("views", info->getViews());
         result->set("praise", info->getPraise());
         result->set("favorites", info->getFavorites());
+
+        result->set("channel_id", info->getChannel());
+        auto cinfo = ChannelMgr::GetInstance()->get(info->getChannel());
+        if(cinfo) {
+            result->set("channel_name", cinfo->getName());
+        }
+
 
         std::vector<data::ArticleCategoryRelInfo::ptr> cinfos;
         ArticleCategoryRelMgr::GetInstance()->listByArticleId(cinfos, id, true);

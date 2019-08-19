@@ -1,17 +1,17 @@
-<table name="user" namespace="blog.data">
+<table name="user" namespace="blog.data" desc="用户表">
     <columns>
-        <column name="id" type="int64" auto_increment="true"/>
-        <column name="account" type="string" length="30"/>
-        <column name="email" type="string" length="50"/>
-        <column name="passwd" type="string" length="30"/>
-        <column name="name" type="string" length="30"/>
-        <column name="code" type="string" length="20"/>
-        <column name="role" type="int32"/>
-        <column name="state" type="int32"/>
-        <column name="login_time" type="datetime"/>
-        <column name="is_deleted" type="int32"/>
-        <column name="create_time" type="datetime"/>
-        <column name="update_time" type="datetime" update="current_timestamp"/>
+        <column name="id" type="int64" auto_increment="true" desc="用户id"/>
+        <column name="account" type="string" length="30" desc="账号"/>
+        <column name="email" type="string" length="50" desc="邮件地址"/>
+        <column name="passwd" type="string" length="30" desc="密码"/>
+        <column name="name" type="string" length="30" desc="名称"/>
+        <column name="code" type="string" length="20" desc="验证码"/>
+        <column name="role" type="int32" desc="角色"/>
+        <column name="state" type="int32" desc="状态1未激活2激活"/>
+        <column name="login_time" type="datetime" desc="登录时间"/>
+        <column name="is_deleted" type="int32" desc="是否删除"/>
+        <column name="create_time" type="datetime" desc="创建时间"/>
+        <column name="update_time" type="datetime" update="current_timestamp" desc="修改时间"/>
     </columns>
     <indexs>
         <index name="pk" cols="id" type="pk"/>

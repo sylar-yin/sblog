@@ -1,0 +1,11 @@
+<table name="channel" namespace="blog.data" desc="频道">
+    <columns>
+        <column name="id" type="int64" auto_increment="true" desc="频道id"/>
+        <column name="name" type="string" length="256" desc="频道名称"/>
+        <column name="create_time" type="datetime" desc="创建时间"/>
+        <column name="update_time" type="datetime" update="current_timestamp" desc="更新时间"/>
+    </columns>
+    <indexs>
+        <index name="pk" cols="id" type="pk"/>
+    </indexs>
+</table>

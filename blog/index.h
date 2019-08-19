@@ -16,6 +16,7 @@ enum class IndexType {
     LABEL_NAME = 5, 
     STATE = 6,
     YEAR_MON = 7,
+    CHANNEL = 8,
 
     WORD = 100
 };
@@ -28,6 +29,7 @@ enum class IndexType {
     XX("label_name",  IndexType::LABEL_NAME,   2)\
     XX("state",       IndexType::STATE,        1)\
     XX("yearmon",     IndexType::YEAR_MON,     2)\
+    XX("channel",     IndexType::CHANNEL,      1)\
     XX("word",        IndexType::WORD,     2)\
 
 

@@ -1,6 +1,7 @@
 #include "article_snappy_servlet.h"
 #include "sylar/log.h"
 #include "blog/manager/article_manager.h"
+#include "blog/manager/channel_manager.h"
 #include "blog/manager/article_category_rel_manager.h"
 #include "blog/manager/article_label_rel_manager.h"
 #include "blog/manager/category_manager.h"
@@ -56,6 +57,12 @@ int32_t ArticleSnappyServlet::handle(sylar::http::HttpRequest::ptr request
             v["views"] = info->getViews();
             v["praise"] = info->getPraise();
             v["favorites"] = info->getFavorites();
+
+            v["channel_id"] = info->getChannel();
+            auto cinfo = ChannelMgr::GetInstance()->get(info->getChannel());
+            if(cinfo) {
+                v["channel_name"] = cinfo->getName();
+            }
 
             std::vector<data::ArticleCategoryRelInfo::ptr> cinfos;
             ArticleCategoryRelMgr::GetInstance()->listByArticleId(cinfos, id, true);

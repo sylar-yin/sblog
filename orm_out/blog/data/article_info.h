@@ -36,6 +36,9 @@ public:
     const int32_t& getState() { return m_state; }
     void setState(const int32_t& v);
 
+    const int64_t& getChannel() { return m_channel; }
+    void setChannel(const int64_t& v);
+
     const int32_t& getIsDeleted() { return m_isDeleted; }
     void setIsDeleted(const int32_t& v);
 
@@ -68,6 +71,7 @@ private:
     int32_t m_isDeleted;
     int64_t m_id;
     int64_t m_userId;
+    int64_t m_channel;
     int64_t m_weight;
     int64_t m_views;
     int64_t m_praise;

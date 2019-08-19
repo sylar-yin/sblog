@@ -403,22 +403,22 @@ int UserInfoDao::CreateTableSQLite3(sylar::IDB::ptr conn) {
 
 int UserInfoDao::CreateTableMySQL(sylar::IDB::ptr conn) {
     return conn->execute("CREATE TABLE user("
-            "`id` bigint AUTO_INCREMENT,"
-            "`account` varchar(30) NOT NULL DEFAULT '',"
-            "`email` varchar(50) NOT NULL DEFAULT '',"
-            "`passwd` varchar(30) NOT NULL DEFAULT '',"
-            "`name` varchar(30) NOT NULL DEFAULT '',"
-            "`code` varchar(20) NOT NULL DEFAULT '',"
-            "`role` int NOT NULL DEFAULT 0,"
-            "`state` int NOT NULL DEFAULT 0,"
-            "`login_time` timestamp NOT NULL DEFAULT '1980-01-01 00:00:00',"
-            "`is_deleted` int NOT NULL DEFAULT 0,"
-            "`create_time` timestamp NOT NULL DEFAULT '1980-01-01 00:00:00',"
-            "`update_time` timestamp NOT NULL DEFAULT '1980-01-01 00:00:00' ON UPDATE current_timestamp ,"
+            "`id` bigint AUTO_INCREMENT COMMENT '用户id',"
+            "`account` varchar(30) NOT NULL DEFAULT '' COMMENT '账号',"
+            "`email` varchar(50) NOT NULL DEFAULT '' COMMENT '邮件地址',"
+            "`passwd` varchar(30) NOT NULL DEFAULT '' COMMENT '密码',"
+            "`name` varchar(30) NOT NULL DEFAULT '' COMMENT '名称',"
+            "`code` varchar(20) NOT NULL DEFAULT '' COMMENT '验证码',"
+            "`role` int NOT NULL DEFAULT 0 COMMENT '角色',"
+            "`state` int NOT NULL DEFAULT 0 COMMENT '状态1未激活2激活',"
+            "`login_time` timestamp NOT NULL DEFAULT '1980-01-01 00:00:00' COMMENT '登录时间',"
+            "`is_deleted` int NOT NULL DEFAULT 0 COMMENT '是否删除',"
+            "`create_time` timestamp NOT NULL DEFAULT '1980-01-01 00:00:00' COMMENT '创建时间',"
+            "`update_time` timestamp NOT NULL DEFAULT '1980-01-01 00:00:00' ON UPDATE current_timestamp  COMMENT '修改时间',"
             "PRIMARY KEY(`id`),"
             "UNIQUE KEY `user_account` (`account`),"
             "UNIQUE KEY `user_email` (`email`),"
-            "UNIQUE KEY `user_name` (`name`))");
+            "UNIQUE KEY `user_name` (`name`)) COMMENT='用户表'");
 }
 } //namespace data
 } //namespace blog

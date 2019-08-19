@@ -45,9 +45,11 @@ set(LIB_SRC
         blog/manager/article_category_rel_manager.cc
         blog/manager/article_label_rel_manager.cc
         blog/manager/category_manager.cc
+        blog/manager/channel_manager.cc
         blog/manager/comment_manager.cc
         blog/manager/label_manager.cc
         blog/manager/user_manager.cc
+        blog/servlets/channel_query_servlet.cc
         blog/servlets/comment_create_servlet.cc
         blog/servlets/comment_delete_servlet.cc
         blog/servlets/comment_detail_servlet.cc
