@@ -68,6 +68,7 @@ public:
                    ,sylar::http::HttpSession::ptr session) override;
 
     int64_t getUserId(sylar::http::HttpRequest::ptr request);
+    std::string getCookieId(sylar::http::HttpRequest::ptr request);
 protected:
     virtual bool handlePre(sylar::http::HttpRequest::ptr request
                            ,sylar::http::HttpResponse::ptr response

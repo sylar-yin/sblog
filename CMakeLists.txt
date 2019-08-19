@@ -17,6 +17,9 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/sylar/thirdpart/yaml-cpp/include
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/sylar/thirdpart/jsoncpp-1.8.4/include)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/orm_out)
 link_directories(/apps/sylar/lib)
+link_directories(/usr/lib)
+link_directories(/usr/lib64)
+link_directories(/usr/lib64/mysql)
 
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/orm_out)
 
@@ -54,9 +57,11 @@ set(LIB_SRC
         blog/servlets/article_create_servlet.cc
         blog/servlets/article_delete_servlet.cc
         blog/servlets/article_detail_servlet.cc
+        blog/servlets/article_interact_servlet.cc
         blog/servlets/article_nearby_servlet.cc
         blog/servlets/article_property_servlet.cc
         blog/servlets/article_publish_servlet.cc
+        blog/servlets/article_query_interact_servlet.cc
         blog/servlets/article_query_servlet.cc
         blog/servlets/article_update_servlet.cc
         blog/servlets/article_update_category_servlet.cc
@@ -78,6 +83,7 @@ set(LIB_SRC
         blog/servlets/user_info_servlet.cc
         blog/servlets/user_login_servlet.cc
         blog/servlets/user_logout_servlet.cc
+        blog/servlets/user_query_interact_servlet.cc
         blog/servlets/user_query_servlet.cc
         blog/servlets/user_update_servlet.cc
         blog/struct.cc
@@ -103,7 +109,7 @@ set(LIBS
         protobuf
         event
         hiredis_vip
-        mysqlclient_r
+        mysqlclient
         zookeeper_mt
         sqlite3
         tinyxml2

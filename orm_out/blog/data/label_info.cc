@@ -262,9 +262,29 @@ LabelInfo::ptr LabelInfoDao::QueryByUserIdName( const int64_t& user_id,  const s
 }
 
 int LabelInfoDao::CreateTableSQLite3(sylar::IDB::ptr conn) {
-    return conn->execute("CREATE TABLE label(id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER NOT NULL DEFAULT 0, name TEXT NOT NULL DEFAULT '', is_deleted INTEGER NOT NULL DEFAULT 0, create_time TIMESTAMP NOT NULL DEFAULT '1980-01-01 00:00:00', update_time TIMESTAMP NOT NULL DEFAULT '1980-01-01 00:00:00');CREATE INDEX label_user_id ON label(user_id);CREATE UNIQUE INDEX label_user_id_name ON label(user_id,name);");
-}int LabelInfoDao::CreateTableMySQL(sylar::IDB::ptr conn) {
-    return conn->execute("CREATE TABLE label(id bigint AUTO_INCREMENT, user_id bigint NOT NULL DEFAULT 0, name varchar(20) NOT NULL DEFAULT '', is_deleted int NOT NULL DEFAULT 0, create_time timestamp NOT NULL DEFAULT '1980-01-01 00:00:00', update_time timestamp NOT NULL DEFAULT '1980-01-01 00:00:00' ON UPDATE current_timestamp , PRIMARY KEY(id), KEY label_user_id (user_id), UNIQUE KEY label_user_id_name (user_id,name))");
+    return conn->execute("CREATE TABLE label("
+            "id INTEGER PRIMARY KEY AUTOINCREMENT,"
+            "user_id INTEGER NOT NULL DEFAULT 0,"
+            "name TEXT NOT NULL DEFAULT '',"
+            "is_deleted INTEGER NOT NULL DEFAULT 0,"
+            "create_time TIMESTAMP NOT NULL DEFAULT '1980-01-01 00:00:00',"
+            "update_time TIMESTAMP NOT NULL DEFAULT '1980-01-01 00:00:00');"
+            "CREATE INDEX label_user_id ON label(user_id);"
+            "CREATE UNIQUE INDEX label_user_id_name ON label(user_id,name);"
+            );
+}
+
+int LabelInfoDao::CreateTableMySQL(sylar::IDB::ptr conn) {
+    return conn->execute("CREATE TABLE label("
+            "`id` bigint AUTO_INCREMENT,"
+            "`user_id` bigint NOT NULL DEFAULT 0,"
+            "`name` varchar(20) NOT NULL DEFAULT '',"
+            "`is_deleted` int NOT NULL DEFAULT 0,"
+            "`create_time` timestamp NOT NULL DEFAULT '1980-01-01 00:00:00',"
+            "`update_time` timestamp NOT NULL DEFAULT '1980-01-01 00:00:00' ON UPDATE current_timestamp ,"
+            "PRIMARY KEY(`id`),"
+            "KEY `label_user_id` (`user_id`),"
+            "UNIQUE KEY `label_user_id_name` (`user_id`,`name`))");
 }
 } //namespace data
 } //namespace blog

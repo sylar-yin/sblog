@@ -45,6 +45,15 @@ public:
     const int64_t& getWeight() { return m_weight; }
     void setWeight(const int64_t& v);
 
+    const int64_t& getViews() { return m_views; }
+    void setViews(const int64_t& v);
+
+    const int64_t& getPraise() { return m_praise; }
+    void setPraise(const int64_t& v);
+
+    const int64_t& getFavorites() { return m_favorites; }
+    void setFavorites(const int64_t& v);
+
     const int64_t& getCreateTime() { return m_createTime; }
     void setCreateTime(const int64_t& v);
 
@@ -60,6 +69,9 @@ private:
     int64_t m_id;
     int64_t m_userId;
     int64_t m_weight;
+    int64_t m_views;
+    int64_t m_praise;
+    int64_t m_favorites;
     std::string m_title;
     std::string m_content;
     int64_t m_publishTime;

@@ -3,7 +3,7 @@
         <column name="id" type="int64" auto_increment="true"/>
         <column name="user_id" type="int64"/>
         <column name="article_id" type="int64"/>
-        <column name="content" type="string" length="300"/>
+        <column name="content" type="string" length="4096"/>
         <column name="parent_id" type="int64"/>
         <column name="state" type="int32"/>
         <column name="is_deleted" type="int32"/>

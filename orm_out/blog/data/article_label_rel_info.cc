@@ -262,9 +262,29 @@ ArticleLabelRelInfo::ptr ArticleLabelRelInfoDao::QueryByArticleIdLabelId( const 
 }
 
 int ArticleLabelRelInfoDao::CreateTableSQLite3(sylar::IDB::ptr conn) {
-    return conn->execute("CREATE TABLE article_label_rel(id INTEGER PRIMARY KEY AUTOINCREMENT, article_id INTEGER NOT NULL DEFAULT 0, label_id INTEGER NOT NULL DEFAULT 0, is_deleted INTEGER NOT NULL DEFAULT 0, create_time TIMESTAMP NOT NULL DEFAULT '1980-01-01 00:00:00', update_time TIMESTAMP NOT NULL DEFAULT '1980-01-01 00:00:00');CREATE INDEX article_label_rel_article_id ON article_label_rel(article_id);CREATE UNIQUE INDEX article_label_rel_article_id_label_id ON article_label_rel(article_id,label_id);");
-}int ArticleLabelRelInfoDao::CreateTableMySQL(sylar::IDB::ptr conn) {
-    return conn->execute("CREATE TABLE article_label_rel(id bigint AUTO_INCREMENT, article_id bigint NOT NULL DEFAULT 0, label_id bigint NOT NULL DEFAULT 0, is_deleted int NOT NULL DEFAULT 0, create_time timestamp NOT NULL DEFAULT '1980-01-01 00:00:00', update_time timestamp NOT NULL DEFAULT '1980-01-01 00:00:00' ON UPDATE current_timestamp , PRIMARY KEY(id), KEY article_label_rel_article_id (article_id), UNIQUE KEY article_label_rel_article_id_label_id (article_id,label_id))");
+    return conn->execute("CREATE TABLE article_label_rel("
+            "id INTEGER PRIMARY KEY AUTOINCREMENT,"
+            "article_id INTEGER NOT NULL DEFAULT 0,"
+            "label_id INTEGER NOT NULL DEFAULT 0,"
+            "is_deleted INTEGER NOT NULL DEFAULT 0,"
+            "create_time TIMESTAMP NOT NULL DEFAULT '1980-01-01 00:00:00',"
+            "update_time TIMESTAMP NOT NULL DEFAULT '1980-01-01 00:00:00');"
+            "CREATE INDEX article_label_rel_article_id ON article_label_rel(article_id);"
+            "CREATE UNIQUE INDEX article_label_rel_article_id_label_id ON article_label_rel(article_id,label_id);"
+            );
+}
+
+int ArticleLabelRelInfoDao::CreateTableMySQL(sylar::IDB::ptr conn) {
+    return conn->execute("CREATE TABLE article_label_rel("
+            "`id` bigint AUTO_INCREMENT,"
+            "`article_id` bigint NOT NULL DEFAULT 0,"
+            "`label_id` bigint NOT NULL DEFAULT 0,"
+            "`is_deleted` int NOT NULL DEFAULT 0,"
+            "`create_time` timestamp NOT NULL DEFAULT '1980-01-01 00:00:00',"
+            "`update_time` timestamp NOT NULL DEFAULT '1980-01-01 00:00:00' ON UPDATE current_timestamp ,"
+            "PRIMARY KEY(`id`),"
+            "KEY `article_label_rel_article_id` (`article_id`),"
+            "UNIQUE KEY `article_label_rel_article_id_label_id` (`article_id`,`label_id`))");
 }
 } //namespace data
 } //namespace blog

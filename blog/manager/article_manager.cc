@@ -3,6 +3,7 @@
 #include "sylar/util.h"
 #include "blog/util.h"
 #include "blog/struct.h"
+#include "sylar/db/redis.h"
 
 namespace blog {
 
@@ -168,6 +169,8 @@ void ArticleManager::start() {
     }
     m_timer = sylar::IOManager::GetThis()->addTimer(60 * 1000,
                 std::bind(&ArticleManager::onTimer, this), true);
+    m_updateTimer = sylar::IOManager::GetThis()->addTimer(2 * 1000,
+                std::bind(&ArticleManager::onUpdateTimer, this), true);
 }
 
 void ArticleManager::stop() {
@@ -177,6 +180,39 @@ void ArticleManager::stop() {
     }
     m_timer->cancel();
     m_timer = nullptr;
+
+    m_updateTimer->cancel();
+    m_updateTimer = nullptr;
+}
+
+void ArticleManager::onUpdateTimer() {
+    std::set<int64_t> updates;
+    {
+        sylar::RWMutex::WriteLock lock(m_viewsMutex);
+        updates.swap(m_updates);
+    }
+
+    if(updates.empty()) {
+        return;
+    }
+    auto conn = blog::GetDB();
+    if(!conn) {
+        SYLAR_LOG_ERROR(g_logger) << "get db connect fail";
+
+        sylar::RWMutex::WriteLock lock(m_viewsMutex);
+        for(auto& i : updates) {
+            m_updates.insert(i);
+        }
+        return;
+    }
+    for(auto& i : updates) {
+        auto info = get(i);
+        if(info) {
+            if(data::ArticleInfoDao::Update(info, conn)) {
+                addUpdate(i);
+            }
+        }
+    }
 }
 
 void ArticleManager::onTimer() {
@@ -246,6 +282,184 @@ std::pair<data::ArticleInfo::ptr, data::ArticleInfo::ptr> ArticleManager::nearby
     }
     return std::make_pair(prev, next);
 }
+
+bool ArticleManager::addViews(uint64_t id, const std::string& cooke_id) {
+    time_t now = time(0);
+    sylar::RWMutex::ReadLock lock(m_viewsMutex);
+    auto it = m_viewsCache.find(id);
+    if(it != m_viewsCache.end()) {
+        auto iit = it->second.find(cooke_id);
+        if(iit != it->second.end() && (now - iit->second) < 10 * 60 ) {
+            return false;
+        }
+    }
+    lock.unlock();
+
+    sylar::RWMutex::WriteLock lock2(m_viewsMutex);
+    m_viewsCache[id][cooke_id] = now;
+    return true;
+}
+
+void ArticleManager::addUpdate(int64_t id) {
+    sylar::RWMutex::WriteLock lock(m_viewsMutex);
+    m_updates.insert(id);
+}
+
+bool ArticleManager::incViews(uint64_t id, const std::string& cooke_id, uint64_t user_id) {
+    auto info = get(id);
+    if(!info) {
+        return false;
+    }
+    bool v = addViews(id, cooke_id);
+    if(v) {
+        info->setViews(info->getViews() + 1);
+        addUpdate(id);
+    }
+    return true;
+}
+
+bool ArticleManager::incPraise(uint64_t id, const std::string& cooke_id, uint64_t user_id) {
+    auto info = get(id);
+    if(!info) {
+        return false;
+    }
+    auto rpy = sylar::RedisUtil::Cmd("blog", "hexists pra_a2u:%lld %lld", id, user_id);
+    if(!rpy) {
+        SYLAR_LOG_ERROR(g_logger) << "hexists fail";
+        return false;
+    }
+    if(rpy->integer == 1) {
+        return true;
+    }
+    rpy = sylar::RedisUtil::Cmd("blog", "hset pra_a2u:%lld %lld %lld", id, user_id, time(0));
+    if(!rpy) {
+        SYLAR_LOG_ERROR(g_logger) << "hset fail";
+        return false;
+    }
+    rpy = sylar::RedisUtil::Cmd("blog", "hset pra_u2a:%lld %lld %lld", user_id, id, time(0));
+    if(!rpy) {
+        SYLAR_LOG_ERROR(g_logger) << "hset fail";
+        return false;
+    }
+    info->setPraise(info->getPraise() + 1);
+    addUpdate(id);
+
+    return true;
+}
+
+bool ArticleManager::incFavorites(uint64_t id, const std::string& cooke_id, uint64_t user_id) {
+    auto info = get(id);
+    if(!info) {
+        return false;
+    }
+    auto rpy = sylar::RedisUtil::Cmd("blog", "hexists fav_a2u:%lld %lld", id, user_id);
+    if(!rpy) {
+        SYLAR_LOG_ERROR(g_logger) << "hexists fail";
+        return false;
+    }
+    if(rpy->integer == 1) {
+        return true;
+    }
+    rpy = sylar::RedisUtil::Cmd("blog", "hset fav_a2u:%lld %lld %lld", id, user_id, time(0));
+    if(!rpy) {
+        SYLAR_LOG_ERROR(g_logger) << "hset fail";
+        return false;
+    }
+    rpy = sylar::RedisUtil::Cmd("blog", "hset fav_u2a:%lld %lld %lld", user_id, id, time(0));
+    if(!rpy) {
+        SYLAR_LOG_ERROR(g_logger) << "hset fail";
+        return false;
+    }
+    info->setFavorites(info->getFavorites() + 1);
+    addUpdate(id);
+    return true;
+}
+
+bool ArticleManager::decPraise(uint64_t id, const std::string& cooke_id, uint64_t user_id) {
+    auto info = get(id);
+    if(!info) {
+        return false;
+    }
+    bool v = false;
+    auto rpy = sylar::RedisUtil::Cmd("blog", "hdel pra_a2u:%lld %lld", id, user_id);
+    if(!rpy) {
+        SYLAR_LOG_ERROR(g_logger) << "hset fail";
+        return false;
+    }
+    if(rpy->integer == 1) {
+        v = true;
+    }
+    rpy = sylar::RedisUtil::Cmd("blog", "hdel pra_u2a:%lld %lld", user_id, id);
+    if(!rpy) {
+        SYLAR_LOG_ERROR(g_logger) << "hset fail";
+        return false;
+    }
+    if(rpy->integer == 1) {
+        v = true;
+    }
+    if(v) {
+        info->setPraise(info->getPraise() - 1);
+        addUpdate(id);
+    }
+    return true;
+}
+
+bool ArticleManager::decFavorites(uint64_t id, const std::string& cooke_id, uint64_t user_id) {
+    auto info = get(id);
+    if(!info) {
+        return false;
+    }
+    bool v = false;
+    auto rpy = sylar::RedisUtil::Cmd("blog", "hdel fav_a2u:%lld %lld", id, user_id);
+    if(!rpy) {
+        SYLAR_LOG_ERROR(g_logger) << "hset fail";
+        return false;
+    }
+    if(rpy->integer == 1) {
+        v = true;
+    }
+    rpy = sylar::RedisUtil::Cmd("blog", "hset fav_u2a:%lld %lld", user_id, id);
+    if(!rpy) {
+        SYLAR_LOG_ERROR(g_logger) << "hset fail";
+        return false;
+    }
+    if(rpy->integer == 1) {
+        v = true;
+    }
+    if(v) {
+        info->setFavorites(info->getFavorites() - 1);
+        addUpdate(id);
+    }
+    return true;
+}
+
+bool ArticleManager::listUserFav(int64_t id, std::map<int64_t, int64_t>& articles) {
+#define PROC(id, mask, articles) \
+    auto rpy = sylar::RedisUtil::Cmd("blog", mask, id); \
+    if(!rpy) { \
+        SYLAR_LOG_ERROR(g_logger) << "hgetall fail"; \
+        return false; \
+    } \
+    for(size_t i = 0; i < rpy->elements; i += 2) { \
+        articles[sylar::TypeUtil::Atoi(rpy->element[i]->str)] \
+            = sylar::TypeUtil::Atoi(rpy->element[i + 1]->str); \
+    } \
+    return true;
+    PROC(id, "hgetall fav_u2a:%lld", articles);
+}
+
+bool ArticleManager::listUserPra(int64_t id, std::map<int64_t, int64_t>& articles) {
+    PROC(id, "hgetall pra_u2a:%lld", articles);
+}
+
+bool ArticleManager::listArticleFav(int64_t id, std::map<int64_t, int64_t>& users) {
+    PROC(id, "hgetall fav_a2u:%lld", users);
+}
+
+bool ArticleManager::listArticlePra(int64_t id, std::map<int64_t, int64_t>& users) {
+    PROC(id, "hgetall pra_a2u:%lld", users);
+}
+#undef PROC
 
 #undef XX
 

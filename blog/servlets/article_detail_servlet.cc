@@ -43,6 +43,9 @@ int32_t ArticleDetailServlet::handle(sylar::http::HttpRequest::ptr request
         result->set("publish_time", info->getPublishTime());
         result->set("state", info->getState());
         result->set("is_deleted", info->getIsDeleted());
+        result->set("views", info->getViews());
+        result->set("praise", info->getPraise());
+        result->set("favorites", info->getFavorites());
 
         std::vector<data::ArticleCategoryRelInfo::ptr> cinfos;
         ArticleCategoryRelMgr::GetInstance()->listByArticleId(cinfos, id, true);

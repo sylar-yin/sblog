@@ -225,4 +225,8 @@ int64_t BlogServlet::getUserId(sylar::http::HttpRequest::ptr request) {
     return 0;
 }
 
+std::string BlogServlet::getCookieId(sylar::http::HttpRequest::ptr request) {
+    return request->getCookie(CookieKey::SESSION_KEY);
+}
+
 }

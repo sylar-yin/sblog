@@ -299,9 +299,35 @@ int CommentInfoDao::QueryByArticleId(std::vector<CommentInfo::ptr>& results,  co
 }
 
 int CommentInfoDao::CreateTableSQLite3(sylar::IDB::ptr conn) {
-    return conn->execute("CREATE TABLE comment(id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER NOT NULL DEFAULT 0, article_id INTEGER NOT NULL DEFAULT 0, content TEXT NOT NULL DEFAULT '', parent_id INTEGER NOT NULL DEFAULT 0, state INTEGER NOT NULL DEFAULT 0, is_deleted INTEGER NOT NULL DEFAULT 0, create_time TIMESTAMP NOT NULL DEFAULT '1980-01-01 00:00:00', update_time TIMESTAMP NOT NULL DEFAULT '1980-01-01 00:00:00');CREATE INDEX comment_user_id ON comment(user_id);CREATE INDEX comment_article_id ON comment(article_id);");
-}int CommentInfoDao::CreateTableMySQL(sylar::IDB::ptr conn) {
-    return conn->execute("CREATE TABLE comment(id bigint AUTO_INCREMENT, user_id bigint NOT NULL DEFAULT 0, article_id bigint NOT NULL DEFAULT 0, content varchar(300) NOT NULL DEFAULT '', parent_id bigint NOT NULL DEFAULT 0, state int NOT NULL DEFAULT 0, is_deleted int NOT NULL DEFAULT 0, create_time timestamp NOT NULL DEFAULT '1980-01-01 00:00:00', update_time timestamp NOT NULL DEFAULT '1980-01-01 00:00:00' ON UPDATE current_timestamp , PRIMARY KEY(id), KEY comment_user_id (user_id), KEY comment_article_id (article_id))");
+    return conn->execute("CREATE TABLE comment("
+            "id INTEGER PRIMARY KEY AUTOINCREMENT,"
+            "user_id INTEGER NOT NULL DEFAULT 0,"
+            "article_id INTEGER NOT NULL DEFAULT 0,"
+            "content TEXT NOT NULL DEFAULT '',"
+            "parent_id INTEGER NOT NULL DEFAULT 0,"
+            "state INTEGER NOT NULL DEFAULT 0,"
+            "is_deleted INTEGER NOT NULL DEFAULT 0,"
+            "create_time TIMESTAMP NOT NULL DEFAULT '1980-01-01 00:00:00',"
+            "update_time TIMESTAMP NOT NULL DEFAULT '1980-01-01 00:00:00');"
+            "CREATE INDEX comment_user_id ON comment(user_id);"
+            "CREATE INDEX comment_article_id ON comment(article_id);"
+            );
+}
+
+int CommentInfoDao::CreateTableMySQL(sylar::IDB::ptr conn) {
+    return conn->execute("CREATE TABLE comment("
+            "`id` bigint AUTO_INCREMENT,"
+            "`user_id` bigint NOT NULL DEFAULT 0,"
+            "`article_id` bigint NOT NULL DEFAULT 0,"
+            "`content` varchar(4096) NOT NULL DEFAULT '',"
+            "`parent_id` bigint NOT NULL DEFAULT 0,"
+            "`state` int NOT NULL DEFAULT 0,"
+            "`is_deleted` int NOT NULL DEFAULT 0,"
+            "`create_time` timestamp NOT NULL DEFAULT '1980-01-01 00:00:00',"
+            "`update_time` timestamp NOT NULL DEFAULT '1980-01-01 00:00:00' ON UPDATE current_timestamp ,"
+            "PRIMARY KEY(`id`),"
+            "KEY `comment_user_id` (`user_id`),"
+            "KEY `comment_article_id` (`article_id`))");
 }
 } //namespace data
 } //namespace blog

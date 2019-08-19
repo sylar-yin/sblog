@@ -1,14 +1,17 @@
-<table name="article" namespace="blog.data">
+<table name="article" namespace="blog.data" desc="博客文章">
     <columns>
         <column name="id" type="int64" auto_increment="true"/>
         <column name="user_id" type="int64"/>
         <column name="title" type="string" length="100"/>
-        <column name="content" type="string" length="4096"/>
+        <column name="content" type="text"/>
         <column name="type" type="int32"/>
         <column name="state" type="int32"/>
         <column name="is_deleted" type="int32"/>
         <column name="publish_time" type="datetime"/>
         <column name="weight" type="int64"/>
+        <column name="views" type="int64" desc="流量数"/>
+        <column name="praise" type="int64" desc="点赞数"/>
+        <column name="favorites" type="int64" desc="收藏数"/>
         <column name="create_time" type="datetime"/>
         <column name="update_time" type="datetime" update="current_timestamp"/>
     </columns>

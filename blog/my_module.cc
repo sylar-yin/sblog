@@ -8,7 +8,9 @@
 #include "blog/servlets/article_create_servlet.h"
 #include "blog/servlets/article_delete_servlet.h"
 #include "blog/servlets/article_detail_servlet.h"
+#include "blog/servlets/article_interact_servlet.h"
 #include "blog/servlets/article_nearby_servlet.h"
+#include "blog/servlets/article_query_interact_servlet.h"
 #include "blog/servlets/article_query_servlet.h"
 #include "blog/servlets/article_property_servlet.h"
 #include "blog/servlets/article_publish_servlet.h"
@@ -38,6 +40,7 @@
 #include "blog/servlets/user_info_servlet.h"
 #include "blog/servlets/user_login_servlet.h"
 #include "blog/servlets/user_logout_servlet.h"
+#include "blog/servlets/user_query_interact_servlet.h"
 #include "blog/servlets/user_query_servlet.h"
 #include "blog/servlets/user_update_servlet.h"
 #include "blog/manager/article_category_rel_manager.h"
@@ -152,6 +155,7 @@ bool MyModule::onServerReady() {
         XX("/user/forget_passwd", UserForgetPasswdServlet);
         XX("/user/change_passwd", UserChangePasswdServlet);
         XX("/user/query", UserQueryServlet);
+        XX("/user/query_interact", UserQueryInteractServlet);
 
         //aritcle system
         XX("/category/create", CategoryCreateServlet);
@@ -164,7 +168,9 @@ bool MyModule::onServerReady() {
 
         XX("/article/create", ArticleCreateServlet);
         XX("/article/delete", ArticleDeleteServlet);
+        XX("/article/interact",  ArticleInteractServlet);
         XX("/article/query",  ArticleQueryServlet);
+        XX("/article/query_interact",  ArticleQueryInteractServlet);
         XX("/article/property",  ArticlePropertyServlet);
         XX("/article/detail",  ArticleDetailServlet);
         XX("/article/snappy",  ArticleSnappyServlet);
@@ -177,7 +183,6 @@ bool MyModule::onServerReady() {
 
         XX("/article/verify",  ArticleVerifyServlet);
         XX("/article/verify_list",  ArticleVerifyListServlet);
-
 
         XX("/comment/create",       CommentCreateServlet);
         XX("/comment/delete",       CommentDeleteServlet);

@@ -53,6 +53,9 @@ int32_t ArticleSnappyServlet::handle(sylar::http::HttpRequest::ptr request
             }
             v["type"] = info->getType();
             v["publish_time"] = info->getPublishTime();
+            v["views"] = info->getViews();
+            v["praise"] = info->getPraise();
+            v["favorites"] = info->getFavorites();
 
             std::vector<data::ArticleCategoryRelInfo::ptr> cinfos;
             ArticleCategoryRelMgr::GetInstance()->listByArticleId(cinfos, id, true);
