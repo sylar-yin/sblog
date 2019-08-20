@@ -48,7 +48,12 @@ int32_t ArticlePublishServlet::handle(sylar::http::HttpRequest::ptr request
             break;
         }
         info->setState((int)State::VERIFYING);
-        info->setPublishTime(publish_time);
+        int64_t now = time(0);
+        if(publish_time > now) {
+            info->setPublishTime(publish_time);
+        } else {
+            info->setPublishTime(now);
+        }
         info->setUpdateTime(time(0));
         auto db = getDB();
         if(!db) {

@@ -44,6 +44,8 @@ int32_t UserLoginServlet::handle(sylar::http::HttpRequest::ptr request
             break;
         }
         if(info->getPasswd() != passwd) {
+            SYLAR_LOG_INFO(g_logger) << "passwd: " << info->getPasswd()
+                << " - " << passwd << " - " << info->toJsonString();
             result->setResult(410, "invalid passwd");
             break;
         }

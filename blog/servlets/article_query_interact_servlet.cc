@@ -1,6 +1,7 @@
 #include "article_query_interact_servlet.h"
 #include "sylar/log.h"
 #include "blog/manager/article_manager.h"
+#include "blog/manager/user_manager.h"
 #include "sylar/util.h"
 #include "blog/my_module.h"
 #include "sylar/email/smtp.h"
@@ -47,6 +48,10 @@ int32_t ArticleQueryInteractServlet::handle(sylar::http::HttpRequest::ptr reques
         for(auto& i : vals) {
             Json::Value v;
             v["id"] = std::to_string(i.first);
+            auto uinfo = UserMgr::GetInstance()->get(i.first);
+            if(uinfo) {
+                v["name"] = uinfo->getName();
+            }
             v["time"] = std::to_string(i.second);
             result->jsondata.append(v);
         }

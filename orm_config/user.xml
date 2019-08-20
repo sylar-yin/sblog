@@ -3,7 +3,7 @@
         <column name="id" type="int64" auto_increment="true" desc="用户id"/>
         <column name="account" type="string" length="30" desc="账号"/>
         <column name="email" type="string" length="50" desc="邮件地址"/>
-        <column name="passwd" type="string" length="30" desc="密码"/>
+        <column name="passwd" type="string" length="50" desc="密码"/>
         <column name="name" type="string" length="30" desc="名称"/>
         <column name="code" type="string" length="20" desc="验证码"/>
         <column name="role" type="int32" desc="角色"/>
